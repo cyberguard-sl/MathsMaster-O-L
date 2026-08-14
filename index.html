@@ -471,7 +471,7 @@
                     <div class="camera-icon" onclick="document.getElementById('profile-pic-upload').click()"><i class="fa-solid fa-camera"></i></div>
                     <input type="file" id="profile-pic-upload" style="display:none;" accept="image/*" onchange="window.updateProfilePic(event)">
                 </div>
-                <input type="text" class="inline-edit-name" id="my-profile-name-display" value="User">
+                <input type="text" class="inline-edit-name" id="my-profile-name-display" value="User" onchange="window.updateProfileName(this.value)">
                 <p class="profile-grade-text" style="text-align: center;" id="profile-grade-display">11 වසර - ගණිතය</p>
 
                 <div id="student-profile-section">
@@ -668,6 +668,24 @@
             await setDoc(doc(db, "users", auth.currentUser.uid), { profilePic: imageUrl }, { merge: true });
             document.getElementById('my-profile-pic-display').src = imageUrl; document.getElementById('display-user-pic').src = imageUrl; alert("පින්තූරය සාර්ථකව යාවත්කාලීන විය!");
         } catch(e) { alert("පින්තූරය අප්ලෝඩ් කිරීම අසාර්ථකයි!"); }
+        document.getElementById('loader').style.display = 'none';
+    };
+
+    // ප්‍රොෆයිල් නම Firebase එකට Update කිරීමේ කේතය
+    window.updateProfileName = async (newName) => {
+        if (!auth.currentUser || !newName.trim()) return;
+        document.getElementById('loader').style.display = 'flex';
+        try {
+            // 1. Firebase Database එකේ නම අලුත් කිරීම
+            await updateDoc(doc(db, "users", auth.currentUser.uid), { name: newName.trim() });
+            
+            // 2. Home Page එකේ උඩින් පෙන්වන නමත් (Hi, Name 👋) ඒ වෙලාවෙම අලුත් කිරීම
+            document.getElementById('display-user-name').innerText = "Hi, " + newName.trim().split(' ')[0] + " 👋";
+            
+            alert("නම සාර්ථකව යාවත්කාලීන විය! 🎉");
+        } catch(e) {
+            alert("නම වෙනස් කිරීම අසාර්ථකයි: " + e.message);
+        }
         document.getElementById('loader').style.display = 'none';
     };
 
