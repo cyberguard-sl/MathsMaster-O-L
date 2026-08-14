@@ -515,11 +515,13 @@
 
         <!-- ================= TEACHER PROFILE PAGE ================= -->
         <div id="teacher-profile-page" class="page-content">
-            <div class="teacher-cover">
-                <i class="fa-solid fa-arrow-left back-btn" onclick="window.showPage('teachers-list-page')"></i>
+            <div class="teacher-cover" style="background: url('banner.png') center/cover; position: relative;">
+                <!-- සුදු අකුරු පැහැදිලිව පෙනීමට අඳුරු Overlay එකක් -->
+                <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 50%, rgba(0,0,0,0.2) 100%); border-bottom-left-radius: 30px; border-bottom-right-radius: 30px;"></div>
+                <i class="fa-solid fa-arrow-left back-btn" onclick="window.showPage('teachers-list-page')" style="position: relative; z-index: 10; text-shadow: 0 2px 5px rgba(0,0,0,0.8);"></i>
             </div>
             <div class="teacher-profile-header">
-                <img id="profile-img" src="" class="teacher-profile-img">
+                <img id="profile-img" src="" class="teacher-profile-img" style="position: relative; z-index: 5;">
                 <h2 style="margin-top: 15px; font-size: 22px;" id="profile-teacher-name">Name</h2>
                 <button class="btn btn-primary chat-btn" style="padding: 12px 25px; font-size: 14px; width: auto; margin-top: 10px; border-radius: 25px; box-shadow: 0 4px 10px rgba(67, 97, 238, 0.3);" onclick="window.startChatFromProfile()">
                     <i class="fa-solid fa-message" style="margin-right: 5px;"></i> පණිවිඩයක් යවන්න
@@ -555,14 +557,27 @@
         </div>
 
         <!-- ================= MY PROFILE PAGE ================= -->
-        <div id="my-profile-page" class="page-content">
-            <div class="top-bar"><i class="fa-solid fa-arrow-left back-btn" onclick="window.showPage('home-page')"></i><span>මගේ ගිණුම (My Profile)</span></div>
-            <div class="content-section">
-                <div class="profile-edit-container">
-                    <img src="" id="my-profile-pic-display" class="profile-main-img">
-                    <div class="camera-icon" onclick="document.getElementById('profile-pic-upload').click()"><i class="fa-solid fa-camera"></i></div>
+        <div id="my-profile-page" class="page-content" style="position: relative;">
+            
+            <!-- Top bar (බැනර් එකට උඩින් පෙනෙන සේ සකසා ඇත) -->
+            <div class="top-bar" style="position: absolute; top: 0; left: 0; width: 100%; background: transparent; z-index: 10;">
+                <i class="fa-solid fa-arrow-left back-btn" onclick="window.showPage('home-page')" style="text-shadow: 0 2px 5px rgba(0,0,0,0.8);"></i>
+                <span style="text-shadow: 0 2px 5px rgba(0,0,0,0.8);">මගේ ගිණුම (My Profile)</span>
+            </div>
+            
+            <!-- Cover/Banner Image (පසුබිම් පින්තූරය) -->
+            <div style="height: 160px; background: url('banner.png') center/cover; position: relative; border-bottom-left-radius: 25px; border-bottom-right-radius: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 50%, rgba(0,0,0,0.1) 100%); border-bottom-left-radius: 25px; border-bottom-right-radius: 25px;"></div>
+            </div>
+
+            <div class="content-section" style="padding-top: 0; position: relative; z-index: 2;">
+                <!-- බැනර් එක මතට අතිච්ඡාදනය වන (Overlapping) ප්‍රොෆයිල් පින්තූරය -->
+                <div class="profile-edit-container" style="margin-top: -65px;">
+                    <img src="" id="my-profile-pic-display" class="profile-main-img" style="position: relative; z-index: 5;">
+                    <div class="camera-icon" onclick="document.getElementById('profile-pic-upload').click()" style="z-index: 6;"><i class="fa-solid fa-camera"></i></div>
                     <input type="file" id="profile-pic-upload" style="display:none;" accept="image/*" onchange="window.updateProfilePic(event)">
                 </div>
+                
                 <input type="text" class="inline-edit-name" id="my-profile-name-display" value="User" onchange="window.updateProfileName(this.value)">
                 <p class="profile-grade-text" style="text-align: center;" id="profile-grade-display">11 වසර - ගණිතය</p>
 
