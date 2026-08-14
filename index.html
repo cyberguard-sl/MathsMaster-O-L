@@ -156,36 +156,40 @@
 
 <div class="mobile-wrapper">
 
-    <!-- ================= SIDEBAR MENU ================= -->
-    <div id="sidebar-overlay" class="sidebar-overlay" onclick="closeSidebar()"></div>
-    <div id="sidebar" class="sidebar">
-        <div class="sidebar-banner">
-            <img src="banner.png" alt="Banner">
-            <i class="fa-solid fa-xmark close-sidebar-btn" onclick="closeSidebar()"></i>
-        </div>
-        <div class="sidebar-menu" style="display: flex; flex-direction: column;">
+<div class="sidebar-menu" style="display: flex; flex-direction: column;">
             <div class="menu-item" onclick="openModal('about-modal')"><i class="fa-solid fa-circle-info"></i> යෙදුම පිළිබඳව (About)</div>
             <div class="menu-item" onclick="openModal('contact-modal')"><i class="fa-solid fa-address-book"></i> අප හා සම්බන්ධ වන්න</div>
             
-            <!-- 👇 'අපේ ඇඩ්' පෙන්වන අලුත් කොටස 👇 -->
-            <div style="flex: 1; padding: 20px; display: flex; align-items: center; justify-content: center; margin-top: 10px;">
-                <!-- ඔයාගේ YouTube චැනල් එකට හෝ Play Store App එකට ලින්ක් එක දෙන්න -->
-                <a href="https://www.youtube.com/@Danidu_Official" target="_blank" style="text-decoration: none; width: 100%;">
-                    <div style="background: linear-gradient(135deg, #4361ee, #3a0ca3); padding: 20px 15px; border-radius: 15px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.15); transition: 0.3s;">
-                        
-                        <i class="fa-brands fa-youtube" style="font-size: 30px; color: white; margin-bottom: 10px;"></i>
-                        <h4 style="color: white; font-size: 15px; margin-bottom: 5px;">Danidu Official</h4>
-                        <p style="font-size: 11px; color: #d1d8ff; margin-bottom: 15px;">අලුත්ම තාක්ෂණික තොරතුරු සඳහා අපගේ YouTube චැනලය හා එක්වන්න.</p>
-                        <span style="background: white; color: var(--primary-color); padding: 6px 15px; border-radius: 20px; font-size: 11px; font-weight: 700;">Subscribe Now</span>
+            <!-- 👇 'Danidu Official' ඇඩ් එක (කුඩා කර උඩට ගෙන ආවා) 👇 -->
+            <div style="padding: 15px 20px 5px 20px;">
+                <a href="https://www.youtube.com/@Danidu_Official" target="_blank" style="text-decoration: none; display: block;">
+                    <div style="background: linear-gradient(135deg, #4361ee, #3a0ca3); padding: 12px; border-radius: 12px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.15); transition: 0.3s;">
+                        <i class="fa-brands fa-youtube" style="font-size: 20px; color: white; margin-bottom: 5px;"></i>
+                        <h4 style="color: white; font-size: 13px; margin-bottom: 8px;">Danidu Official</h4>
+                        <span style="background: white; color: var(--primary-color); padding: 4px 12px; border-radius: 20px; font-size: 10px; font-weight: 700;">Subscribe</span>
                     </div>
                 </a>
+            </div>
+            
+            <!-- 👇 අලුතින් එකතු කරන 9:16 Video කොටස 👇 -->
+            <div style="flex: 1; padding: 15px 20px; display: flex; flex-direction: column; justify-content: center;">
+                <!-- 9:16 අනුපාතය තබා ගැනීමට padding-bottom: 177.77% භාවිතා කර ඇත -->
+                <div style="position: relative; width: 100%; padding-bottom: 177.77%; height: 0; overflow: hidden; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); background: #000;">
+                    
+                    <!-- ඔයාගේ වීඩියෝව මෙතන ප්ලේ වේවි -->
+                    <iframe id="sidebar-promo-video" 
+                            src="https://www.youtube.com/embed/TurNw6uLT0Q?rel=0&modestbranding=1" 
+                            style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;" 
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                            allowfullscreen>
+                    </iframe>
+                    
+                </div>
             </div>
             <!-- 👆 අවසානය 👆 -->
 
             <div class="menu-item" onclick="logoutUser()" style="margin-top: auto; color: #ef4444; border-top: 1px solid #f1f3f4;"><i class="fa-solid fa-right-from-bracket" style="color: #ef4444;"></i> ඉවත් වන්න (Logout)</div>
         </div>
-    </div>
-
     <!-- ================= MODALS (POP-UPS) ================= -->
     <div id="about-modal" class="modal">
         <div class="modal-content">
@@ -627,7 +631,17 @@
             window.AndroidApp.showSidebarAd();
         }
     };
-    window.closeSidebar = () => { document.getElementById('sidebar').classList.remove('open'); document.getElementById('sidebar-overlay').style.display = 'none'; };
+    window.closeSidebar = () => { 
+        document.getElementById('sidebar').classList.remove('open'); 
+        document.getElementById('sidebar-overlay').style.display = 'none'; 
+        
+        // සයිඩ්බාරය වැසූ විට වීඩියෝව නැවැත්වීම (Iframe එක Refresh කිරීම මගින්)
+        let iframe = document.getElementById('sidebar-promo-video');
+        if (iframe) {
+            let iframeSrc = iframe.src;
+            iframe.src = iframeSrc; 
+        }
+    };
     window.openModal = (id) => { document.getElementById(id).style.display = 'flex'; window.closeSidebar(); };
     window.closeModal = (id) => { document.getElementById(id).style.display = 'none'; };
 
