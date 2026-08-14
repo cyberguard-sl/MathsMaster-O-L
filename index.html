@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MathsMaster O/L App</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ================= මූලික සැකසුම් ================= */
+        :root { --primary-color: #4361ee; --bg-color: #f8f9fa; --text-color: #333333; --card-bg: #ffffff; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background-color: #e0e5ec; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
+        .mobile-wrapper { position: relative; width: 100%; max-width: 400px; height: 100%; background-color: var(--bg-color); overflow: hidden; box-shadow: 0 0 20px rgba(0,0,0,0.1); }
+        .app-container { width: 100%; height: 100%; overflow-y: auto; overflow-x: hidden; scroll-behavior: smooth; }
+
+        .btn { width: 100%; padding: 15px; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; transition: 0.3s; margin-bottom: 15px; }
+        .btn-primary { background-color: var(--primary-color); color: white; }
+        .btn-danger { background-color: #ff4d6d; color: white; }
+        .btn-google { background-color: white; color: #333; border: 1px solid #ddd; display: flex; align-items: center; justify-content: center; gap: 10px; }
+
+        /* ================= පොදු කොටස් ================= */
+        .page-content { padding-bottom: 80px; display: none; min-height: 100%; }
+        .header { background-color: var(--primary-color); padding: 30px 20px 20px 20px; border-bottom-left-radius: 25px; border-bottom-right-radius: 25px; color: white; }
+        .search-bar { background-color: white; padding: 10px 15px; border-radius: 12px; display: flex; align-items: center; gap: 10px; border: 1px solid #ddd; margin-top: 15px; }
+        .search-bar input { border: none; outline: none; width: 100%; font-size: 14px; }
+        .content-section { padding: 20px; }
+        .top-bar { padding: 20px; background-color: var(--primary-color); color: white; display: flex; align-items: center; gap: 15px; font-size: 18px; font-weight: 600; position: sticky; top: 0; z-index: 10; }
+        .back-btn { cursor: pointer; font-size: 20px; }
+        .input-group { margin-bottom: 15px; width: 100%; }
+        .input-group label { font-size: 12px; color: #666; margin-bottom: 5px; display: block; font-weight: 500; }
+        .input-group input, .input-group select, .input-group textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 10px; outline: none; font-size: 13px; font-family: inherit;}
+        .input-group textarea { resize: vertical; min-height: 60px; }
+
+        /* ================= SIDEBAR & MODALS ================= */
+        .sidebar-overlay { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; backdrop-filter: blur(2px); }
+        .sidebar { position: absolute; top: 0; left: -100%; width: 75%; max-width: 260px; height: 100%; background: white; z-index: 2001; transition: left 0.3s ease; box-shadow: 2px 0 15px rgba(0,0,0,0.2); display: flex; flex-direction: column; }
+        .sidebar.open { left: 0; }
+        .sidebar-banner { width: 100%; height: 140px; background-color: var(--primary-color); position: relative; }
+        .sidebar-banner img { width: 100%; height: 100%; object-fit: cover; } 
+        .close-sidebar-btn { position: absolute; top: 15px; right: 15px; color: white; font-size: 22px; cursor: pointer; background: rgba(0,0,0,0.4); width: 32px; height: 32px; display: flex; justify-content: center; align-items: center; border-radius: 50%; transition: 0.2s;}
+        .sidebar-menu { padding: 15px 0; flex: 1; overflow-y: auto; }
+        .sidebar .menu-item { padding: 16px 20px; display: flex; align-items: center; gap: 15px; font-size: 14px; color: #444; border-bottom: 1px solid #f1f3f4; cursor: pointer; transition: background 0.2s; font-weight: 500;}
+        .sidebar .menu-item:hover { background: #eef2ff; color: var(--primary-color); }
+        .sidebar .menu-item i { font-size: 18px; color: var(--primary-color); width: 20px; text-align: center; }
+
+        .modal { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 3000; justify-content: center; align-items: center; padding: 20px; backdrop-filter: blur(2px);}
+        .modal-content { background: white; width: 100%; max-width: 320px; border-radius: 20px; padding: 25px; position: relative; text-align: center; animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 10px 25px rgba(0,0,0,0.2);}
+        @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .close-modal { position: absolute; top: 15px; right: 15px; font-size: 20px; color: #888; cursor: pointer; transition: 0.2s;}
+        .close-modal:hover { color: #ef4444; }
+        
+        .social-links { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
+        .s-link { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 12px; border-radius: 12px; text-decoration: none; color: white; font-size: 13px; font-weight: 500; transition: 0.2s; box-shadow: 0 3px 6px rgba(0,0,0,0.1);}
+        .s-link:active { transform: scale(0.95); }
+        .whatsapp { background: linear-gradient(135deg, #25D366, #128C7E); } 
+        .facebook { background: linear-gradient(135deg, #1877F2, #145dbf); } 
+        .youtube { background: linear-gradient(135deg, #FF0000, #c40000); } 
+        .other-apps { background: linear-gradient(135deg, #333333, #111111); }
+
+        /* ================= LOGIN PAGE ================= */
+        #login-page { padding: 30px 20px; display: flex; flex-direction: column; justify-content: center; min-height: 100%; }
+        .logo-area { text-align: center; margin-bottom: 40px; }
+        .logo-area i { font-size: 50px; color: var(--primary-color); margin-bottom: 10px; }
+        .toggle-text { text-align: center; font-size: 14px; margin-top: 10px; }
+        .toggle-text span { color: var(--primary-color); cursor: pointer; font-weight: 600; }
+
+        /* ================= Square Cards ================= */
+        .user-info { display: flex; justify-content: space-between; align-items: center; }
+        .profile-pic { width: 50px; height: 50px; background-color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: var(--primary-color); font-size: 24px; object-fit: cover; cursor: pointer; border: 2px solid white; }
+        .grid-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .card { background-color: var(--card-bg); padding: 20px 10px; border-radius: 15px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.05); cursor: pointer; transition: 0.2s; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
+        .card:active { transform: scale(0.95); }
+        .card i { font-size: 32px; color: var(--primary-color); margin-bottom: 12px; }
+        .card h3 { font-size: 14px; color: var(--text-color); font-weight: 600; line-height: 1.3;}
+        .card p { font-size: 11px; color: #888; margin-top: 5px; }
+        .card-full { grid-column: 1 / -1; flex-direction: row; justify-content: flex-start; padding: 20px; gap: 20px; text-align: left; background: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%); color: white;}
+        .card-full i { font-size: 40px; margin-bottom: 0; color: white; }
+        .card-full h3 { color: white; font-size: 16px; margin-bottom: 5px;}
+        .card-full p { color: #d1d8ff; font-size: 12px; margin-top: 0;}
+        .card-save-icon { position: absolute; top: 12px; right: 12px; font-size: 18px; color: #ccc; cursor: pointer; transition: 0.3s; z-index: 5; }
+        .card-save-icon.saved { color: #ff4d6d; }
+
+        /* ================= List Items ================= */
+        .list-item { background: white; padding: 15px; border-radius: 10px; display: flex; align-items: center; gap: 15px; margin-bottom: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); position: relative; }
+        .list-item .icon-box { font-size: 24px; color: var(--primary-color); cursor: pointer; }
+        .list-item .details { flex: 1; cursor: pointer;}
+        .list-item .details h4 { font-size: 14px; margin-bottom: 3px; color: var(--text-color); line-height: 1.4; }
+        .list-item .details p { font-size: 12px; color: #888; }
+        .save-btn-icon { font-size: 18px; color: #ccc; cursor: pointer; padding: 10px; transition: 0.3s; }
+        .save-btn-icon.saved { color: #ff4d6d; }
+
+        /* ================= Teacher Questions ================= */
+        .question-card { background: white; padding: 15px; border-radius: 10px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-left: 4px solid var(--primary-color);}
+        .question-text { font-size: 13px; line-height: 1.5; color: #333; margin-bottom: 10px; word-wrap: break-word;}
+        .question-meta { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #eee; padding-top: 10px; }
+        .author-tag { font-size: 11px; background: #eef2ff; color: var(--primary-color); padding: 3px 10px; border-radius: 12px; font-weight: 600; }
+        .question-actions i { font-size: 14px; cursor: pointer; margin-left: 15px; }
+
+        /* ================= TEACHER PROFILE ================= */
+        .teacher-list-card { background: white; padding: 15px; border-radius: 15px; display: flex; align-items: center; gap: 15px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); cursor: pointer; }
+        .teacher-avatar { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 2px solid #eee; background: white;}
+        .teacher-cover { background: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%); height: 160px; position: relative; border-bottom-left-radius: 30px; border-bottom-right-radius: 30px; padding: 20px;}
+        .teacher-cover .back-btn { color: white; position: relative; z-index: 10; font-size: 22px; text-shadow: 0 2px 4px rgba(0,0,0,0.3);}
+        .teacher-profile-header { text-align: center; margin-top: -65px; padding: 0 20px; position: relative; z-index: 2;}
+        .teacher-profile-img { width: 130px; height: 130px; border-radius: 50%; border: 5px solid var(--bg-color); background: white; object-fit: cover; margin: 0 auto; display: block; box-shadow: 0 5px 15px rgba(0,0,0,0.15); }
+        .accordion-item { background: white; border-radius: 12px; margin-bottom: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); overflow: hidden; }
+        .accordion-header { padding: 15px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; background: white; transition: 0.2s; }
+        .accordion-title { flex: 1; }
+        .accordion-title h4 { font-size: 14px; color: var(--text-color); margin-bottom: 3px; display: flex; align-items: center; gap: 8px; }
+        .accordion-title p { font-size: 12px; color: var(--primary-color); font-weight: 500; }
+        .accordion-icon { font-size: 14px; color: #888; transition: transform 0.3s; padding-left: 10px; }
+        .accordion-body { padding: 0 15px 15px 15px; font-size: 13px; color: #555; display: none; line-height: 1.5; border-top: 1px dashed #eee; margin-top: 5px; padding-top: 10px; }
+
+        /* ================= Chat Room & Inbox ================= */
+        .chat-list-item { background: white; padding: 15px; border-bottom: 1px solid #eee; display: flex; align-items: center; gap: 15px; cursor: pointer; }
+        .chat-details { flex: 1; min-width: 0; }
+        .chat-details h4 { font-size: 15px; margin-bottom: 3px; display: flex; justify-content: space-between; align-items: center;}
+        .chat-details p { font-size: 13px; color: #777; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; margin: 0;}
+        #chat-room-page { display: none; height: 100%; flex-direction: column; background-color: #f0f2f5; padding-bottom: 70px; box-sizing: border-box;}
+        .chat-room-header { background-color: var(--primary-color); padding: 15px 20px; color: white; display: flex; align-items: center; gap: 15px; flex-shrink: 0;}
+        .chat-room-avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid white; background: white;}
+        .chat-messages { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; scroll-behavior: smooth;}
+        .msg-bubble { max-width: 80%; padding: 12px 15px; border-radius: 15px; font-size: 14px; line-height: 1.4; position: relative; word-wrap: break-word;}
+        .msg-received { background-color: white; color: #333; align-self: flex-start; border-bottom-left-radius: 2px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);}
+        .msg-sent { background-color: var(--primary-color); color: white; align-self: flex-end; border-bottom-right-radius: 2px; box-shadow: 0 1px 2px rgba(0,0,0,0.1);}
+        .msg-time { font-size: 10px; margin-top: 5px; text-align: right; opacity: 0.7; display: block; }
+        .chat-input-area { background-color: white; padding: 15px; display: flex; align-items: center; gap: 10px; flex-shrink: 0; box-shadow: 0 -2px 5px rgba(0,0,0,0.05);}
+        .chat-input { flex: 1; padding: 12px 15px; border: none; background-color: #f1f3f4; border-radius: 20px; outline: none; font-size: 14px; }
+        .send-btn { background-color: var(--primary-color); color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; border: none; }
+
+        /* ================= MY PROFILE ================= */
+        .profile-edit-container { text-align: center; margin: 20px 0; position: relative; display: flex; justify-content: center;}
+        .profile-main-img { width: 130px; height: 130px; border-radius: 50%; border: 5px solid white; box-shadow: 0 5px 15px rgba(0,0,0,0.15); object-fit: cover; background: white; }
+        .camera-icon { position: absolute; bottom: 5px; right: calc(50% - 50px); background: var(--primary-color); color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 3px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.2);}
+        .inline-edit-name { border: none; background: transparent; font-size: 20px; font-weight: 600; text-align: center; color: var(--text-color); width: 100%; outline: none; border-bottom: 1px dashed #ccc; padding-bottom: 5px; margin-bottom: 5px;}
+        .inline-edit-name:focus { border-bottom: 1px solid var(--primary-color); }
+        .profile-grade-text { font-size: 13px; color: #666; margin-bottom: 20px; }
+        .teacher-settings { background: #eef2ff; padding: 15px; border-radius: 12px; margin-bottom: 20px; border: 1px dashed #4361ee; }
+        .time-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .added-class-card { background: white; padding: 12px; border-radius: 8px; border-left: 4px solid var(--primary-color); margin-bottom: 10px; font-size: 12px; position: relative; box-shadow: 0 2px 4px rgba(0,0,0,0.05);}
+        .added-class-actions { position: absolute; top: 12px; right: 12px; display: flex; gap: 10px; }
+        .icon-delete { color: #ef4444; cursor: pointer; font-size: 14px;}
+
+        /* ================= Bottom Navigation ================= */
+        .bottom-nav { position: absolute; bottom: 0; width: 100%; background-color: white; display: flex; justify-content: space-around; padding: 15px 0; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); border-top-left-radius: 20px; border-top-right-radius: 20px; z-index: 1000; display: none;}
+        .nav-item { text-align: center; color: #888; cursor: pointer; font-size: 12px; }
+        .nav-item i { font-size: 20px; margin-bottom: 5px; display: block; }
+        .nav-item.active { color: var(--primary-color); }
+        
+        #loader { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.8); z-index: 9999; justify-content: center; align-items: center; font-size: 24px; color: var(--primary-color); }
+    </style>
+</head>
+<body>
+
+<div class="mobile-wrapper">
+
+    <!-- ================= SIDEBAR MENU ================= -->
+    <!-- ================= SIDEBAR MENU ================= -->
+    <div id="sidebar-overlay" class="sidebar-overlay" onclick="closeSidebar()"></div>
+    <div id="sidebar" class="sidebar">
+        <div class="sidebar-banner">
+            <!-- 👇 ඔයාගේ ෆෝල්ඩරේ තියෙන පින්තූරයේ නම මෙතනට දෙන්න -->
+            <img src="banner.png" alt="Banner">
+            <i class="fa-solid fa-xmark close-sidebar-btn" onclick="closeSidebar()"></i>
+        </div>
+        <div class="sidebar-menu">
+            <div class="menu-item" onclick="openModal('about-modal')"><i class="fa-solid fa-circle-info"></i> යෙදුම පිළිබඳව (About)</div>
+            <div class="menu-item" onclick="openModal('contact-modal')"><i class="fa-solid fa-address-book"></i> අප හා සම්බන්ධ වන්න</div>
+            <div class="menu-item" onclick="logoutUser()" style="margin-top: auto; color: #ef4444;"><i class="fa-solid fa-right-from-bracket" style="color: #ef4444;"></i> ඉවත් වන්න (Logout)</div>
+        </div>
+    </div>
+
+    <!-- ================= MODALS (POP-UPS) ================= -->
+    <div id="about-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('about-modal')"><i class="fa-solid fa-xmark"></i></span>
+            <div style="font-size: 40px; color: var(--primary-color); margin-bottom: 10px;"><i class="fa-solid fa-square-root-variable"></i></div>
+            <h3 style="color: var(--text-color); margin-bottom: 10px;">MathsMaster O/L</h3>
+            <p style="font-size: 13px; color: #555; line-height: 1.6;">මෙම යෙදුම සාමාන්‍ය පෙළ සිසුන් සඳහා ගණිතය විෂය පහසුවෙන් හැදෑරීමට, පසුගිය ප්‍රශ්න පත්‍ර ලබා ගැනීමට සහ දිවයින පුරා සිටින ප්‍රවීණ ගුරුවරුන් සමග සෘජුව සම්බන්ධ වීමට නිර්මාණය කර ඇත.</p>
+            <p style="font-size: 11px; color: #888; margin-top: 20px;">Version 1.0.0</p>
+        </div>
+    </div>
+
+    <div id="contact-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('contact-modal')"><i class="fa-solid fa-xmark"></i></span>
+            <h3 style="margin-bottom: 5px;">සම්බන්ධ වන්න</h3>
+            <p style="font-size: 12px; color: #555; margin-bottom: 20px;">Developed by <strong>Danidu Deemath</strong></p>
+            <div class="social-links">
+                <a href="https://wa.me/+94760419130" target="_blank" class="s-link whatsapp"><i class="fa-brands fa-whatsapp" style="font-size:18px;"></i> WhatsApp පණිවිඩයක් යවන්න</a>
+                <a href="https://www.facebook.com/@Danidu_Deemath" target="_blank" class="s-link facebook"><i class="fa-brands fa-facebook" style="font-size:18px;"></i> Danidu Deemath</a>
+                <a href="https://www.youtube.com/@Danidu_Official" target="_blank" class="s-link youtube"><i class="fa-brands fa-youtube" style="font-size:18px;"></i> Danidu Official</a>
+                <a href="https://www.youtube.com/@CyberGuardSL" target="_blank" class="s-link youtube" style="background: linear-gradient(135deg, #e62117, #a10000);"><i class="fa-brands fa-youtube" style="font-size:18px;"></i> CyberGuard SL</a>
+                
+                <!-- 👇 Update කළ Play Store ලින්ක් එක -->
+                <a href="https://play.google.com/store/apps/details?id=com.danidu.cyberguardsl&pcampaignid=web_share" target="_blank" class="s-link other-apps"><i class="fa-brands fa-google-play" style="font-size:18px;"></i> මගේ අනෙකුත් Apps</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- App Container -->
+    <div class="app-container">
+        <div id="loader"><i class="fa-solid fa-spinner fa-spin"></i></div>
+
+        <!-- ================= LOGIN / REGISTER PAGE ================= -->
+        <div id="login-page" style="display: flex;">
+            <div class="logo-area"><i class="fa-solid fa-square-root-variable"></i><h1>MathsMaster O/L</h1><p style="color: #666; font-size: 14px; margin-top: 5px;">ගණිතය ඉතා පහසුවෙන්</p></div>
+            <div id="register-fields" style="display: none;">
+                <div class="input-group"><input type="text" id="auth-name" placeholder="ඔබේ නම (Name)"></div>
+                <div class="input-group"><select id="auth-grade"><option value="10 වසර">10 වසර</option><option value="11 වසර" selected>11 වසර</option></select></div>
+            </div>
+            <div class="input-group"><input type="email" id="auth-email" placeholder="විද්‍යුත් තැපෑල (Email)"></div>
+            <div class="input-group"><input type="password" id="auth-password" placeholder="මුරපදය (Password)"></div>
+            <button class="btn btn-primary" id="auth-main-btn" onclick="handleAuth()">ඇතුලත් වන්න (Login)</button>
+            <button class="btn btn-google" onclick="handleGoogleAuth()"><img src="https://img.icons8.com/color/48/000000/google-logo.png" style="width: 20px;"> Continue with Google</button>
+            <p class="toggle-text" id="toggle-msg">ගිණුමක් නැද්ද? <span onclick="window.toggleAuthMode()">ලියාපදිංචි වන්න</span></p>
+        </div>
+
+        <!-- ================= HOME PAGE ================= -->
+        <div id="home-page" class="page-content">
+            <div class="header">
+                <div class="user-info">
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <i class="fa-solid fa-bars" style="font-size: 24px; cursor: pointer; color: white; padding-right: 5px;" onclick="window.openSidebar()"></i>
+                        <div class="user-details"><h2 id="display-user-name" style="margin:0; font-size: 20px;">Hi, User 👋</h2><p id="display-user-grade" style="margin:0; opacity: 0.9;">11 වසර - ගණිතය</p></div>
+                    </div>
+                    <img src="https://ui-avatars.com/api/?name=User&background=fff&color=4361ee" id="display-user-pic" class="profile-pic" onclick="window.showMyProfile()">
+                </div>
+                <div class="search-bar"><i class="fa-solid fa-magnifying-glass"></i><input type="text" placeholder="පාඩම් හෝ ප්‍රශ්න පත්‍ර සොයන්න..."></div>
+            </div>
+            <div class="content-section">
+                <h3 style="margin-bottom: 15px; font-size: 16px;">ඔබේ වසර තෝරන්න</h3>
+                <div class="grid-cards">
+                    <div class="card" onclick="window.openGradeMenu('10 වසර')"><i class="fa-solid fa-book-open"></i><h3>10 වසර</h3></div>
+                    <div class="card" onclick="window.openGradeMenu('11 වසර')"><i class="fa-solid fa-graduation-cap"></i><h3>11 වසර</h3></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= GRADE MENU PAGE ================= -->
+        <div id="grade-menu-page" class="page-content">
+            <div class="top-bar"><i class="fa-solid fa-arrow-left back-btn" onclick="window.showPage('home-page')"></i><span id="grade-title">10 වසර</span></div>
+            <div class="content-section">
+                <div class="grid-cards">
+                    <div class="card card-full" onclick="window.showPage('teacher-questions-page')"><i class="fa-solid fa-clipboard-question"></i><div><h3>ගුරුවරු දමන ගැටලු</h3><p>දිනපතා අලුත් ගැටලු සහ අභ්‍යාස</p></div></div>
+                    <div class="card" onclick="window.showPage('paper-categories-page')"><i class="fa-solid fa-file-pdf"></i><h3>ප්‍රශ්න පත්‍ර</h3></div>
+                    <div class="card" onclick="window.showPage('syllabus-list-page')"><i class="fa-solid fa-book"></i><h3>විෂය නිර්දේශය</h3></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= TEACHER QUESTIONS PAGE ================= -->
+        <div id="teacher-questions-page" class="page-content">
+            <div class="top-bar"><i class="fa-solid fa-arrow-left back-btn" onclick="window.showPage('grade-menu-page')"></i><span id="tq-grade-title">ගුරුවරුන්ගේ ගැටලු</span></div>
+            <div class="content-section">
+                <p style="font-size: 12px; color: #666; margin-bottom: 15px;"><i class="fa-solid fa-circle-info"></i> මෙම ගැටලු වලට පිළිතුරු සපයා ගුරුවරුන් සමඟ සාකච්ඡා කළ හැක.</p>
+                
+                <div id="add-question-section" class="teacher-only-element" style="display: none; margin-bottom: 20px;">
+                    <button class="btn" id="show-add-q-btn" style="background: #eef2ff; color: var(--primary-color); border: 1px dashed var(--primary-color);" onclick="document.getElementById('question-form').style.display='block'; this.style.display='none';">+ නව ගැටලුවක් එක් කරන්න</button>
+                    <div id="question-form" style="display: none; background: white; padding: 15px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+                        <textarea id="new-q-text" placeholder="ගැටලුව මෙහි ටයිප් කරන්න..." style="width: 100%; min-height: 80px; padding: 10px; border: 1px solid #ddd; border-radius: 8px; outline: none; margin-bottom: 10px; font-size: 13px; font-family: inherit;"></textarea>
+                        <label style="font-size: 11px; color: #888; display: block; margin-bottom: 5px;">පින්තූරයක් ඇතුලත් කරන්න (විකල්පයි):</label>
+                        <input type="file" id="new-q-image-file" accept="image/*" style="width: 100%; margin-bottom: 10px; font-size: 12px;">
+                        <div style="display: flex; gap: 10px;">
+                            <button class="btn btn-primary" style="margin-bottom: 0; padding: 10px; font-size: 14px; flex: 1;" onclick="window.submitTeacherQuestion()">එක් කරන්න</button>
+                            <button class="btn" style="margin-bottom: 0; padding: 10px; font-size: 14px; background: #f1f3f4; color: #333; flex: 1;" onclick="document.getElementById('question-form').style.display='none'; document.getElementById('show-add-q-btn').style.display='block';">අවලංගු කරන්න</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="teacher-questions-container"><p style='text-align:center; font-size:13px; color:#888;'>ගැටලු සෙවුම් කරමින්...</p></div>
+            </div>
+        </div>
+
+        <!-- ================= PAPERS CATEGORY PAGE ================= -->
+        <div id="paper-categories-page" class="page-content">
+            <div class="top-bar"><i class="fa-solid fa-arrow-left back-btn" onclick="window.showPage('grade-menu-page')"></i><span>ප්‍රශ්න පත්‍ර තෝරන්න</span></div>
+            <div class="content-section">
+                <div class="grid-cards">
+                    <div class="card" onclick="window.showPage('ol-years-page')" style="border: 2px solid var(--primary-color);"><i class="fa-solid fa-award"></i><h3>O/L Past Papers</h3></div>
+                    <div class="card" onclick="window.showProvincialPapers('බස්නාහිර')"><i class="fa-solid fa-map-location-dot"></i><h3>බස්නාහිර</h3></div>
+                    <div class="card" onclick="window.showProvincialPapers('මධ්‍යම')"><i class="fa-solid fa-map-location-dot"></i><h3>මධ්‍යම</h3></div>
+                    <div class="card" onclick="window.showProvincialPapers('දකුණු')"><i class="fa-solid fa-map-location-dot"></i><h3>දකුණු</h3></div>
+                    <div class="card" onclick="window.showProvincialPapers('උතුරු')"><i class="fa-solid fa-map-location-dot"></i><h3>උතුරු</h3></div>
+                    <div class="card" onclick="window.showProvincialPapers('නැගෙනහිර')"><i class="fa-solid fa-map-location-dot"></i><h3>නැගෙනහිර</h3></div>
+                    <div class="card" onclick="window.showProvincialPapers('වයඹ')"><i class="fa-solid fa-map-location-dot"></i><h3>වයඹ</h3></div>
+                    <div class="card" onclick="window.showProvincialPapers('උතුරු මැද')"><i class="fa-solid fa-map-location-dot"></i><h3>උතුරු මැද</h3></div>
+                    <div class="card" onclick="window.showProvincialPapers('ඌව')"><i class="fa-solid fa-map-location-dot"></i><h3>ඌව</h3></div>
+                    <div class="card" onclick="window.showProvincialPapers('සබරගමුව')"><i class="fa-solid fa-map-location-dot"></i><h3>සබරගමුව</h3></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= O/L YEARS PAGE ================= -->
+        <div id="ol-years-page" class="page-content">
+            <div class="top-bar"><i class="fa-solid fa-arrow-left back-btn" onclick="window.showPage('paper-categories-page')"></i><span>O/L වසර තෝරන්න</span></div>
+            <div class="content-section">
+                <p style="font-size: 11px; color: #666; margin-bottom: 15px; text-align: center;">පහතින් ඔබට අවශ්‍ය වසර තෝරන්න.</p>
+                <div class="grid-cards">
+                    <div class="card" style="padding-top: 30px;"><i class="fa-regular fa-bookmark card-save-icon" onclick="window.toggleSavePaper(this); event.stopPropagation();"></i><div onclick="window.openPdfViewer('2025 O/L ගණිතය', 'papers/2025_maths.pdf')" style="width: 100%;"><i class="fa-regular fa-calendar-check"></i><h3>2025</h3></div></div>
+                    <div class="card" style="padding-top: 30px;"><i class="fa-regular fa-bookmark card-save-icon" onclick="window.toggleSavePaper(this); event.stopPropagation();"></i><div onclick="window.openPdfViewer('2024 O/L ගණිතය', 'papers/2024_maths.pdf')" style="width: 100%;"><i class="fa-regular fa-calendar-check"></i><h3>2024</h3></div></div>
+                    <div class="card" style="padding-top: 30px;"><i class="fa-regular fa-bookmark card-save-icon" onclick="window.toggleSavePaper(this); event.stopPropagation();"></i><div onclick="window.openPdfViewer('2023 O/L ගණිතය', 'papers/2023_maths.pdf')" style="width: 100%;"><i class="fa-regular fa-calendar-check"></i><h3>2023</h3></div></div>
+                    <div class="card" style="padding-top: 30px;"><i class="fa-regular fa-bookmark card-save-icon" onclick="window.toggleSavePaper(this); event.stopPropagation();"></i><div onclick="window.openPdfViewer('2022 O/L ගණිතය', 'papers/2022_maths.pdf')" style="width: 100%;"><i class="fa-regular fa-calendar-check"></i><h3>2022</h3></div></div>
+                    <div class="card" style="padding-top: 30px;"><i class="fa-regular fa-bookmark card-save-icon" onclick="window.toggleSavePaper(this); event.stopPropagation();"></i><div onclick="window.openPdfViewer('2021 O/L ගණිතය', 'papers/2021_maths.pdf')" style="width: 100%;"><i class="fa-regular fa-calendar-check"></i><h3>2021</h3></div></div>
+                    <div class="card" style="padding-top: 30px;"><i class="fa-regular fa-bookmark card-save-icon" onclick="window.toggleSavePaper(this); event.stopPropagation();"></i><div onclick="window.openPdfViewer('2020 O/L ගණිතය', 'papers/2020_maths.pdf')" style="width: 100%;"><i class="fa-regular fa-calendar-check"></i><h3>2020</h3></div></div>
+                    <div class="card" style="padding-top: 30px;"><i class="fa-regular fa-bookmark card-save-icon" onclick="window.toggleSavePaper(this); event.stopPropagation();"></i><div onclick="window.openPdfViewer('2019 O/L ගණිතය', 'papers/2019_maths.pdf')" style="width: 100%;"><i class="fa-regular fa-calendar-check"></i><h3>2019</h3></div></div>
+                    <div class="card" style="padding-top: 30px;"><i class="fa-regular fa-bookmark card-save-icon" onclick="window.toggleSavePaper(this); event.stopPropagation();"></i><div onclick="window.openPdfViewer('2018 O/L ගණිතය', 'papers/2018_maths.pdf')" style="width: 100%;"><i class="fa-regular fa-calendar-check"></i><h3>2018</h3></div></div>
+                    <div class="card" style="padding-top: 30px;"><i class="fa-regular fa-bookmark card-save-icon" onclick="window.toggleSavePaper(this); event.stopPropagation();"></i><div onclick="window.openPdfViewer('2017 O/L ගණිතය', 'papers/2017_maths.pdf')" style="width: 100%;"><i class="fa-regular fa-calendar-check"></i><h3>2017</h3></div></div>
+                    <div class="card" style="padding-top: 30px;"><i class="fa-regular fa-bookmark card-save-icon" onclick="window.toggleSavePaper(this); event.stopPropagation();"></i><div onclick="window.openPdfViewer('2016 O/L ගණිතය', 'papers/2016_maths.pdf')" style="width: 100%;"><i class="fa-regular fa-calendar-check"></i><h3>2016</h3></div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= PROVINCIAL PAPERS LIST (TEACHER UPLOAD) ================= -->
+        <div id="provincial-papers-list-page" class="page-content">
+            <div class="top-bar"><i class="fa-solid fa-arrow-left back-btn" onclick="window.showPage('paper-categories-page')"></i><span id="province-title">පළාත</span></div>
+            <div class="content-section">
+                
+                <div id="teacher-add-paper-section" class="teacher-only-element" style="display: none; margin-bottom: 20px;">
+                    <button class="btn" id="show-add-paper-btn" style="background: #eef2ff; color: var(--primary-color); border: 1px dashed var(--primary-color);" onclick="document.getElementById('add-paper-form').style.display='block'; this.style.display='none';">
+                        <i class="fa-solid fa-upload"></i> අලුත් ප්‍රශ්න පත්‍රයක් දාන්න
+                    </button>
+                    <div id="add-paper-form" style="display: none; background: white; padding: 15px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+                        <p style="font-size: 11px; color: var(--primary-color); margin-bottom: 10px;"><i class="fa-solid fa-file-pdf"></i> ඔබගේ දුරකථනයෙන් හෝ පරිගණකයෙන් PDF තෝරා Upload කරන්න.</p>
+                        
+                        <div class="input-group">
+                            <label>ප්‍රශ්න පත්‍රයේ නම:</label>
+                            <input type="text" id="new-paper-title" placeholder="උදා: 2023 - 1 වන වාරය">
+                        </div>
+                        <div class="input-group">
+                            <label>PDF ෆයිල් එක තෝරන්න:</label>
+                            <input type="file" id="new-paper-file" accept="application/pdf" style="font-size: 12px; padding: 8px;">
+                        </div>
+                        
+                        <div style="display: flex; gap: 10px;">
+                            <button class="btn btn-primary" style="margin-bottom: 0; padding: 10px; font-size: 14px; flex: 1;" onclick="window.submitProvincialPaper()">Upload කරන්න</button>
+                            <button class="btn" style="margin-bottom: 0; padding: 10px; font-size: 14px; background: #f1f3f4; color: #333; flex: 1;" onclick="document.getElementById('add-paper-form').style.display='none'; document.getElementById('show-add-paper-btn').style.display='block';">අවලංගු කරන්න</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="dynamic-provincial-papers"></div>
+            </div>
+        </div>
+
+        <!-- ================= PDF VIEWER PAGE (WITH DOWNLOAD FALLBACK) ================= -->
+        <div id="pdf-viewer-page" class="page-content" style="height: 100vh; overflow: hidden; display: flex; flex-direction: column;">
+            <div class="top-bar"><i class="fa-solid fa-arrow-left back-btn" onclick="window.closePdfViewer()"></i><span id="pdf-title" style="font-size: 15px;">PDF Preview</span></div>
+            
+            <!-- සුවිශේෂී Download බොත්තම (PDF පෙන්වන්නේ නැති Mobile බ්‍රව්සර් සඳහා) -->
+            <div style="background: #eef2ff; padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #c7d2fe; flex-shrink: 0;">
+                <span style="font-size: 11px; color: var(--primary-color); font-weight: 600;"><i class="fa-solid fa-circle-info"></i> PDF එක නොපෙනේ නම් 👉</span>
+                <a id="pdf-download-btn" href="#" target="_blank" class="btn btn-primary" style="margin: 0; padding: 6px 15px; width: auto; font-size: 12px; border-radius: 20px; text-decoration: none;"><i class="fa-solid fa-download"></i> Download</a>
+            </div>
+
+            <iframe id="pdf-frame" class="pdf-container" src="" style="flex: 1; border: none; width: 100%; height: 85vh;"></iframe>
+        </div>
+
+        <!-- ================= SYLLABUS LIST PAGE ================= -->
+        
+        <div id="syllabus-list-page" class="page-content">
+            <div class="top-bar"><i class="fa-solid fa-arrow-left back-btn" onclick="window.showPage('grade-menu-page')"></i><span id="syllabus-title">පාඩම් ලැයිස්තුව</span></div>
+            <div class="content-section">
+                
+                <div id="teacher-add-lesson-section" class="teacher-only-element" style="display: none; margin-bottom: 20px;">
+                    <button class="btn" id="show-add-lesson-btn" style="background: #eef2ff; color: var(--primary-color); border: 1px dashed var(--primary-color);" onclick="document.getElementById('add-lesson-form').style.display='block'; this.style.display='none';">+ අලුත් පාඩමක් එකතු කරන්න</button>
+                    <div id="add-lesson-form" style="display: none; background: white; padding: 15px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+                        <div class="input-group"><label>පාඩමේ නම:</label><input type="text" id="new-lesson-title" placeholder="උදා: පරිමිතිය"></div>
+                        <div style="display: flex; gap: 10px;">
+                            <button class="btn btn-primary" style="margin-bottom: 0; padding: 10px; font-size: 14px; flex: 1;" onclick="window.submitLesson()">එකතු කරන්න</button>
+                            <button class="btn" style="margin-bottom: 0; padding: 10px; font-size: 14px; background: #f1f3f4; color: #333; flex: 1;" onclick="document.getElementById('add-lesson-form').style.display='none'; document.getElementById('show-add-lesson-btn').style.display='block';">අවලංගු</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="dynamic-lessons-list"></div>
+            </div>
+        </div>
+
+        <!-- ================= LESSON QUESTIONS PAGE ================= -->
+        <div id="lesson-questions-page" class="page-content">
+            <div class="top-bar"><i class="fa-solid fa-arrow-left back-btn" onclick="window.showPage('syllabus-list-page')"></i><span id="lesson-title">පාඩම</span></div>
+            <div class="content-section">
+                
+                <div id="teacher-add-lq-section" class="teacher-only-element" style="display: none; margin-bottom: 20px;">
+                    <button class="btn" id="show-add-lq-btn" style="background: #eef2ff; color: var(--primary-color); border: 1px dashed var(--primary-color);" onclick="document.getElementById('add-lq-form').style.display='block'; this.style.display='none';">+ අලුත් ගැටලුවක් / නිබන්ධනයක් දාන්න</button>
+                    <div id="add-lq-form" style="display: none; background: white; padding: 15px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+                        <p style="font-size: 11px; color: var(--primary-color); margin-bottom: 10px;"><i class="fa-solid fa-cloud-arrow-up"></i> නිබන්ධන කෙලින්ම යන්නේ ඔයාගේ Google Drive එකටයි.</p>
+                        <div class="input-group"><label>ගැටලුව / විස්තරය:</label><textarea id="new-lq-text" placeholder="විස්තරය ටයිප් කරන්න..."></textarea></div>
+                        <div class="input-group"><label>PDF හෝ පින්තූරය (Drive):</label><input type="file" id="new-lq-file" style="font-size: 12px; padding: 8px;"></div>
+                        <div style="display: flex; gap: 10px;">
+                            <button class="btn btn-primary" style="margin-bottom: 0; padding: 10px; font-size: 14px; flex: 1;" onclick="window.submitLessonQuestion()">Upload කරන්න</button>
+                            <button class="btn" style="margin-bottom: 0; padding: 10px; font-size: 14px; background: #f1f3f4; color: #333; flex: 1;" onclick="document.getElementById('add-lq-form').style.display='none'; document.getElementById('show-add-lq-btn').style.display='block';">අවලංගු</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="dynamic-lesson-questions"></div>
+            </div>
+        </div>
+
+        <!-- ================= TEACHERS LIST PAGE ================= -->
+        <div id="teachers-list-page" class="page-content">
+            <div class="top-bar"><i class="fa-solid fa-chalkboard-user"></i> අපේ ගුරුවරුන්</div>
+            <div class="content-section">
+                <div class="search-bar" style="margin-bottom: 20px;"><i class="fa-solid fa-magnifying-glass"></i><input type="text" placeholder="ගුරුවරයෙක් සොයන්න..."></div>
+                <div id="teachers-list-container"><p style="text-align:center; font-size:13px; color:#888;">ගුරුවරුන් සොයමින් පවතී...</p></div>
+            </div>
+        </div>
+
+        <!-- ================= TEACHER PROFILE PAGE ================= -->
+        <div id="teacher-profile-page" class="page-content">
+            <div class="teacher-cover">
+                <i class="fa-solid fa-arrow-left back-btn" onclick="window.showPage('teachers-list-page')"></i>
+            </div>
+            <div class="teacher-profile-header">
+                <img id="profile-img" src="" class="teacher-profile-img">
+                <h2 style="margin-top: 15px; font-size: 22px;" id="profile-teacher-name">Name</h2>
+                <button class="btn btn-primary chat-btn" style="padding: 12px 25px; font-size: 14px; width: auto; margin-top: 10px; border-radius: 25px; box-shadow: 0 4px 10px rgba(67, 97, 238, 0.3);" onclick="window.startChatFromProfile()">
+                    <i class="fa-solid fa-message" style="margin-right: 5px;"></i> පණිවිඩයක් යවන්න
+                </button>
+            </div>
+            <div class="content-section">
+                <h3 style="font-size: 15px; margin-bottom: 15px; color: var(--primary-color);"><i class="fa-solid fa-calendar-days"></i> පන්ති කාලසටහන</h3>
+                <div id="public-teacher-classes-list"></div>
+            </div>
+        </div>
+
+        <!-- ================= CHATS PAGE (Inbox) ================= -->
+        <div id="chats-page" class="page-content">
+            <div class="top-bar"><i class="fa-solid fa-messages"></i> පණිවිඩ (Inbox)</div>
+            <div style="padding: 15px;"><div class="search-bar" style="border: 1px solid #ddd; background: white;"><i class="fa-solid fa-magnifying-glass"></i><input type="text" placeholder="නම සොයන්න..."></div></div>
+            <div class="chat-list" id="inbox-list-container"><p style="text-align:center; font-size:13px; color:#888; margin-top:20px;">පණිවිඩ පූරණය වෙමින් පවතී...</p></div>
+        </div>
+
+        <!-- ================= CHAT ROOM PAGE ================= -->
+        <div id="chat-room-page" class="page-content">
+            <div class="chat-room-header">
+                <i class="fa-solid fa-arrow-left" style="cursor: pointer;" onclick="window.goBackFromChat()"></i>
+                <img id="chat-header-img" src="" class="chat-room-avatar">
+                <div><h3 id="chat-header-name" style="font-size: 16px;">Name</h3><p style="font-size: 11px; color: #d1d8ff;">Online</p></div>
+            </div>
+            <div class="chat-messages" id="chat-messages-container"></div>
+            <div class="chat-input-area">
+                <!-- පින්තූරය තෝරන අයිකන් එක -->
+                <i class="fa-solid fa-paperclip attach-btn" onclick="document.getElementById('chat-image-upload').click()" style="cursor: pointer; font-size: 20px; color: var(--primary-color); padding: 5px 10px;"></i>
+                
+                <!-- සැඟවුණු File Input එක -->
+                <input type="file" id="chat-image-upload" style="display: none;" accept="image/*" onchange="window.sendChatImage(event)">
+                
+                <input type="text" class="chat-input" placeholder="පණිවිඩය ටයිප් කරන්න..." id="msg-input">
+                <button class="send-btn" onclick="window.sendMessage()"><i class="fa-solid fa-paper-plane"></i></button>
+            </div>
+        </div>
+
+        <!-- ================= MY PROFILE PAGE ================= -->
+        <div id="my-profile-page" class="page-content">
+            <div class="top-bar"><i class="fa-solid fa-arrow-left back-btn" onclick="window.showPage('home-page')"></i><span>මගේ ගිණුම (My Profile)</span></div>
+            <div class="content-section">
+                <div class="profile-edit-container">
+                    <img src="" id="my-profile-pic-display" class="profile-main-img">
+                    <div class="camera-icon" onclick="document.getElementById('profile-pic-upload').click()"><i class="fa-solid fa-camera"></i></div>
+                    <input type="file" id="profile-pic-upload" style="display:none;" accept="image/*" onchange="window.updateProfilePic(event)">
+                </div>
+                <input type="text" class="inline-edit-name" id="my-profile-name-display" value="User">
+                <p class="profile-grade-text" style="text-align: center;" id="profile-grade-display">11 වසර - ගණිතය</p>
+
+                <div id="student-profile-section">
+                    <div id="saved-papers-container"></div>
+                </div>
+
+                <div id="teacher-profile-section" style="display: none;">
+                    <div class="teacher-settings">
+                        <h4 style="font-size: 14px; color: var(--primary-color); margin-bottom: 15px;"><i class="fa-solid fa-chalkboard-user"></i> මගේ පන්ති කාලසටහන (Add/Edit)</h4>
+                        <button class="btn" id="show-add-class-btn" style="background: #eef2ff; color: var(--primary-color); border: 1px dashed var(--primary-color);" onclick="window.toggleAddClassForm()">+ නව පන්තියක් එකතු කරන්න</button>
+                        <div id="add-class-form-container" style="display: none; background: white; padding: 12px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); margin-bottom: 15px;">
+                            <div class="input-group"><label>ස්ථානය</label><input type="text" id="class-location" placeholder="උදා: සිප්යානා - බලංගොඩ"></div>
+                            <div class="time-grid"><div class="input-group"><label>වසර</label><select id="class-grade"><option>10 වසර</option><option selected>11 වසර</option></select></div><div class="input-group"><label>දිනය</label><select id="class-day"><option>සඳුදා</option><option>අඟහරුවාදා</option><option>බදාදා</option><option>බ්‍රහස්පතින්දා</option><option>සිකුරාදා</option><option>සෙනසුරාදා</option><option>ඉරිදා</option></select></div></div>
+                            <div class="time-grid"><div class="input-group"><label>ආරම්භය</label><input type="time" id="class-start-time" value="08:00"></div><div class="input-group"><label>අවසානය</label><input type="time" id="class-end-time" value="12:00"></div></div>
+                            <div class="input-group"><label>පාඩම</label><input type="text" id="class-lesson" placeholder="උදා: වෘත්ත"></div>
+                            <div class="input-group" style="margin-bottom: 10px;"><label>විස්තරය</label><textarea id="class-desc" placeholder="විස්තරය..."></textarea></div>
+                            <button class="btn btn-primary" style="padding: 10px; font-size: 14px; margin-bottom: 0;" onclick="window.addClass()">+ පන්තිය එකතු කරන්න (Add)</button>
+                            <button class="btn" style="padding: 10px; font-size: 14px; margin-top: 10px; background: #f8f9fa; color: #333;" onclick="window.toggleAddClassForm()">අවලංගු කරන්න (Cancel)</button>
+                        </div>
+                        <label style="font-size: 12px; font-weight: 600; color: #666; margin-top: 15px; margin-bottom: 10px; display: block;">දැනට ඇති පන්ති:</label>
+                        <div id="my-added-classes-container"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= BOTTOM NAVIGATION ================= -->
+        <div id="bottom-navigation" class="bottom-nav">
+            <div class="nav-item active" onclick="window.switchTab('home-page', this)"><i class="fa-solid fa-house"></i><span>Home</span></div>
+            <div class="nav-item" onclick="window.switchTab('teachers-list-page', this)"><i class="fa-solid fa-chalkboard-user"></i><span>Teachers</span></div>
+            <div class="nav-item" onclick="window.switchTab('chats-page', this)"><i class="fa-solid fa-message"></i><span>Chats</span></div>
+            <div class="nav-item" onclick="window.showMyProfile()"><i class="fa-solid fa-user"></i><span>Profile</span></div>
+        </div>
+
+    </div> <!-- End of .app-container -->
+</div> <!-- End of .mobile-wrapper -->
+
+<!-- Firebase SDKs -->
+<!-- Firebase SDKs -->
+<!-- Firebase SDKs -->
+<!-- Firebase SDKs -->
+<!-- Firebase SDKs -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+    import { getFirestore, doc, setDoc, getDoc, collection, addDoc, getDocs, query, where, deleteDoc, orderBy, updateDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyBs_wPI_g68EXtEeo5hhmly11Lul3qD_n8",
+        authDomain: "mathsmaster-ol.firebaseapp.com",
+        projectId: "mathsmaster-ol",
+        storageBucket: "mathsmaster-ol.firebasestorage.app",
+        messagingSenderId: "132729346402",
+        appId: "1:132729346402:web:35a5ab7c9bdd02111ff43b"
+    };
+
+    const IMGBB_API_KEY = "LKvrpgvvb9GB86GkbK5aEXTuABI";
+    const GOOGLE_SCRIPT_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyW0V75QzRt_A43fooWtYoAwzxrSLbOQ0AVwg9P73_k9NaG0zl62sAxJQsx0fvTpFZ-/exec";
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const googleProvider = new GoogleAuthProvider();
+
+    let isLoginMode = true; let currentRole = 'student'; let lastPdfParentPage = ''; let lastChatParentPage = '';
+    let currentChatId = null; let currentTargetUid = null; let currentTargetName = ""; let currentTargetImg = "";
+    let unsubscribeChat = null; let unsubscribeInbox = null; let viewProfileUid = null;
+    
+    // අලුතින් එකතු කළ Variables (වසර සහ පාඩම මතක තබා ගැනීමට)
+    let currentProvince = ''; 
+    let currentGrade = '11 වසර'; // Default එක 
+    let currentLessonId = '';
+
+    // --- Sidebar & Modal Functions ---
+    window.openSidebar = () => { document.getElementById('sidebar').classList.add('open'); document.getElementById('sidebar-overlay').style.display = 'block'; };
+    window.closeSidebar = () => { document.getElementById('sidebar').classList.remove('open'); document.getElementById('sidebar-overlay').style.display = 'none'; };
+    window.openModal = (id) => { document.getElementById(id).style.display = 'flex'; window.closeSidebar(); };
+    window.closeModal = (id) => { document.getElementById(id).style.display = 'none'; };
+
+    window.toggleAuthMode = () => {
+        isLoginMode = !isLoginMode;
+        document.getElementById('register-fields').style.display = isLoginMode ? 'none' : 'block';
+        document.getElementById('auth-main-btn').innerText = isLoginMode ? 'ඇතුලත් වන්න (Login)' : 'ලියාපදිංචි වන්න (Register)';
+        document.getElementById('toggle-msg').innerHTML = isLoginMode ? 'ගිණුමක් නැද්ද? <span onclick="window.toggleAuthMode()">ලියාපදිංචි වන්න</span>' : 'දැනටමත් ගිණුමක් තිබේද? <span onclick="window.toggleAuthMode()">ඇතුලත් වන්න</span>';
+    };
+
+    window.handleAuth = async () => {
+        const email = document.getElementById('auth-email').value; const password = document.getElementById('auth-password').value;
+        if (!email || !password) return alert("කරුණාකර Email සහ Password ලබාදෙන්න!");
+        document.getElementById('loader').style.display = 'flex';
+        try {
+            if (isLoginMode) { await signInWithEmailAndPassword(auth, email, password); } 
+            else {
+                const name = document.getElementById('auth-name').value; const grade = document.getElementById('auth-grade').value;
+                if (!name) return alert("නම ඇතුලත් කරන්න!");
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password); const user = userCredential.user;
+                await setDoc(doc(db, "users", user.uid), { name: name, email: email, grade: grade, role: "student", profilePic: `https://ui-avatars.com/api/?name=${name.replace(' ', '+')}&background=4361ee&color=fff` });
+            }
+        } catch (error) { alert("දෝෂයකි: " + error.message); }
+        document.getElementById('loader').style.display = 'none';
+    };
+
+    window.handleGoogleAuth = async () => {
+        document.getElementById('loader').style.display = 'flex';
+        try {
+            const result = await signInWithPopup(auth, googleProvider); const user = result.user;
+            const docSnap = await getDoc(doc(db, "users", user.uid));
+            if (!docSnap.exists()) { await setDoc(doc(db, "users", user.uid), { name: user.displayName, email: user.email, grade: "11 වසර", role: "student", profilePic: user.photoURL }); }
+        } catch (error) { alert("Google Login Error: " + error.message); }
+        document.getElementById('loader').style.display = 'none';
+    };
+
+    window.logoutUser = async () => { await signOut(auth); window.closeSidebar(); };
+
+    onAuthStateChanged(auth, async (user) => {
+        if (user) {
+            document.getElementById('login-page').style.display = 'none';
+            document.getElementById('home-page').style.display = 'block';
+            document.getElementById('bottom-navigation').style.display = 'flex';
+
+            const docSnap = await getDoc(doc(db, "users", user.uid));
+            if (docSnap.exists()) {
+                const userData = docSnap.data();
+                const pic = userData.profilePic || `https://ui-avatars.com/api/?name=${userData.name}&background=4361ee&color=fff`;
+                currentRole = userData.role || 'student'; 
+                document.getElementById('display-user-name').innerText = "Hi, " + userData.name.split(' ')[0] + " 👋";
+                document.getElementById('display-user-grade').innerText = userData.grade + " - ගණිතය";
+                document.getElementById('display-user-pic').src = pic;
+                document.getElementById('my-profile-name-display').value = userData.name;
+                document.getElementById('my-profile-pic-display').src = pic;
+                window.loadAllTeachers(); if(currentRole === 'teacher') window.loadMyClasses(); window.loadInbox(); window.loadSavedPapers(); 
+            }
+        } else {
+            document.querySelectorAll('.page-content').forEach(p => p.style.display = 'none');
+            document.getElementById('bottom-navigation').style.display = 'none';
+            document.getElementById('login-page').style.display = 'flex';
+        }
+    });
+
+    // ==========================================
+    // UPLOAD FUNCTIONS (ImgBB & Drive)
+    // ==========================================
+    window.uploadToImgBB = async (file) => {
+        const formData = new FormData(); formData.append("image", file);
+        const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: "POST", body: formData });
+        const data = await res.json(); return data.data.url;
+    };
+
+    window.uploadPdfToDrive = async (file) => {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = async () => {
+                const base64Data = reader.result.split(',')[1];
+                try {
+                    const response = await fetch(GOOGLE_SCRIPT_WEB_APP_URL, {
+                        method: "POST", body: JSON.stringify({ base64: base64Data, filename: file.name, mimetype: file.type }),
+                        headers: { "Content-Type": "text/plain;charset=utf-8" }
+                    });
+                    const result = await response.json();
+                    if(result.url) { resolve(result.url); } else { reject(new Error(result.error)); }
+                } catch(e) { reject(e); }
+            };
+            reader.onerror = error => reject(error);
+        });
+    };
+
+    window.updateProfilePic = async (event) => {
+        const file = event.target.files[0]; if(!file) return; document.getElementById('loader').style.display = 'flex';
+        try {
+            const imageUrl = await uploadToImgBB(file);
+            await setDoc(doc(db, "users", auth.currentUser.uid), { profilePic: imageUrl }, { merge: true });
+            document.getElementById('my-profile-pic-display').src = imageUrl; document.getElementById('display-user-pic').src = imageUrl; alert("පින්තූරය සාර්ථකව යාවත්කාලීන විය!");
+        } catch(e) { alert("පින්තූරය අප්ලෝඩ් කිරීම අසාර්ථකයි!"); }
+        document.getElementById('loader').style.display = 'none';
+    };
+
+    window.submitTeacherQuestion = async () => {
+        const text = document.getElementById('new-q-text').value; 
+        const imageFile = document.getElementById('new-q-image-file').files[0]; 
+        if(!text) return alert("කරුණාකර ගැටලුව ඇතුලත් කරන්න!"); 
+        
+        document.getElementById('loader').style.display = 'flex';
+        try {
+            let imageUrl = ""; 
+            if (imageFile) { imageUrl = await window.uploadToImgBB(imageFile); }
+            
+            await addDoc(collection(db, "teacher_questions"), { 
+                teacherId: auth.currentUser.uid, 
+                grade: currentGrade, // <--- 10 වසර ද 11 වසර ද කියා සේව් වීම
+                text: text, 
+                imageUrl: imageUrl, 
+                timestamp: Date.now() 
+            });
+            
+            document.getElementById('new-q-text').value = ''; 
+            document.getElementById('new-q-image-file').value = ''; 
+            document.getElementById('question-form').style.display = 'none'; 
+            document.getElementById('show-add-q-btn').style.display = 'block'; 
+            window.loadTeacherQuestions();
+        } catch (e) { alert("අසාර්ථකයි: " + e.message); } 
+        document.getElementById('loader').style.display = 'none';
+    };
+
+    window.loadTeacherQuestions = async () => {
+        document.getElementById('tq-grade-title').innerText = `${currentGrade} - ගුරුවරුන්ගේ ගැටලු`;
+        const container = document.getElementById('teacher-questions-container'); 
+        container.innerHTML = "<p style='text-align:center; font-size:13px; color:#888;'>ගැටලු සෙවුම් කරමින්...</p>"; 
+        
+        const addSection = document.getElementById('add-question-section'); 
+        if(addSection) { addSection.style.display = currentRole === 'teacher' ? 'block' : 'none'; } 
+        
+        try { 
+            // අදාළ වසරට (Grade) පමණක් ගැටලු ගෙන ඒම
+            const q = query(collection(db, "teacher_questions"), where("grade", "==", currentGrade)); 
+            const querySnapshot = await getDocs(q); 
+            container.innerHTML = ""; 
+            
+            if(querySnapshot.empty) { container.innerHTML = "<p style='text-align:center; font-size:13px; color:#888;'>දැනට මෙම වසරට ගැටලු කිසිවක් ඇතුලත් කර නැත.</p>"; return; } 
+            
+            let qArray = [];
+            querySnapshot.forEach((docSnap) => { qArray.push({ id: docSnap.id, ...docSnap.data() }); });
+            qArray.sort((a, b) => b.timestamp - a.timestamp); 
+
+            qArray.forEach((data) => { 
+                const isMine = auth.currentUser && data.teacherId === auth.currentUser.uid; 
+                let imgHtml = data.imageUrl ? `<img src="${data.imageUrl}" style="width: 100%; border-radius: 5px; margin-top: 10px;">` : ''; 
+                let html = `<div class="question-card"><div class="question-text" id="q-text-${data.id}">${data.text.replace(/\n/g, '<br>')} ${imgHtml}</div>`; 
+                if (currentRole === 'teacher' && isMine) { 
+                    html += `<div class="question-meta"><span class="author-tag">ඔබ (You)</span><div class="question-actions"><i class="fa-solid fa-pen" style="color: #f59e0b;" onclick="window.editTeacherQuestion('${data.id}')"></i><i class="fa-solid fa-trash" style="color: #ef4444;" onclick="window.deleteTeacherQuestion('${data.id}')"></i></div></div>`; 
+                } 
+                html += `</div>`; container.innerHTML += html; 
+            }); 
+        } catch (error) { container.innerHTML = "<p style='text-align:center; font-size:13px; color:red;'>ගැටලු ලබා ගැනීමේ දෝෂයකි!</p>"; } 
+
+        window.deleteTeacherQuestion = async (id) => { 
+        if(!confirm("මෙම ගැටලුව මකා දැමීමට අවශ්‍යද?")) return; 
+        document.getElementById('loader').style.display = 'flex'; 
+        try {
+            await deleteDoc(doc(db, "teacher_questions", id)); 
+            window.loadTeacherQuestions(); 
+        } catch(e) { alert("දෝෂයකි: " + e.message); }
+        document.getElementById('loader').style.display = 'none'; 
+    };
+
+    window.editTeacherQuestion = async (id) => { 
+        const qTextDiv = document.getElementById(`q-text-${id}`); 
+        // පින්තූර තියෙනවා නම් ඒවා අයින් කරලා ටෙක්ස්ට් එක විතරක් ගන්නවා
+        const currentText = qTextDiv.innerHTML.replace(/<img[^>]*>/g, "").replace(/<br>/g, "\n").trim(); 
+        
+        const newText = prompt("ගැටලුව වෙනස් කරන්න:", currentText); 
+        if (newText !== null && newText.trim() !== "") { 
+            document.getElementById('loader').style.display = 'flex'; 
+            try {
+                await updateDoc(doc(db, "teacher_questions", id), { text: newText.trim() }); 
+                window.loadTeacherQuestions(); 
+            } catch(e) { alert("දෝෂයකි: " + e.message); }
+            document.getElementById('loader').style.display = 'none'; 
+        } 
+    };
+    };
+    // ==========================================
+    // PROVINCIAL PAPERS (Grade Specific)
+    // ==========================================
+    window.showProvincialPapers = (province) => {
+        currentProvince = province;
+        document.getElementById('province-title').innerText = province + " (" + currentGrade + ")";
+        window.showPage('provincial-papers-list-page');
+        window.loadProvincialPapers();
+    };
+
+    window.loadProvincialPapers = async () => {
+        const container = document.getElementById('dynamic-provincial-papers');
+        container.innerHTML = "<p style='text-align:center; font-size:12px; color:#888;'>ප්‍රශ්න පත්‍ර සොයමින්...</p>";
+        const addSection = document.getElementById('teacher-add-paper-section');
+        if(addSection) { addSection.style.display = currentRole === 'teacher' ? 'block' : 'none'; }
+
+        try {
+            // පළාතට සහ තෝරාගත් වසරට (10/11) ගැලපෙන ඒවා පමණක් සෙවීම
+            const q = query(collection(db, "provincial_papers"), where("province", "==", currentProvince), where("grade", "==", currentGrade));
+            const snapshot = await getDocs(q);
+            container.innerHTML = "";
+            
+            if(snapshot.empty) { container.innerHTML = "<p style='text-align:center; font-size:12px; color:#888;'>මෙම වසරට අදාළව පේපර්ස් නැත.</p>"; return; }
+
+            let papersArray = [];
+            snapshot.forEach(docSnap => { papersArray.push({ id: docSnap.id, ...docSnap.data() }); });
+            papersArray.sort((a, b) => b.timestamp - a.timestamp);
+
+            papersArray.forEach(data => {
+                const isMine = auth.currentUser && data.teacherId === auth.currentUser.uid;
+                let html = `<div class="list-item"><div class="icon-box" onclick="window.openPdfViewer('${data.title}', '${data.url}')"><i class="fa-solid fa-file-pdf" style="color: #ff4d6d;"></i></div><div class="details" onclick="window.openPdfViewer('${data.title}', '${data.url}')"><h4>${data.title}</h4><p>Added by Teacher</p></div>`;
+                if(isMine) { html += `<i class="fa-solid fa-trash" style="color:#ef4444; font-size:14px; cursor:pointer;" onclick="window.deleteProvincialPaper('${data.id}')"></i>`; } 
+                else { html += `<i class="fa-regular fa-bookmark save-btn-icon" onclick="window.toggleSavePaper(this)"></i>`; }
+                html += `</div>`; container.innerHTML += html;
+            });
+        } catch (e) { container.innerHTML = "<p style='text-align:center; font-size:12px; color:red;'>දෝෂයකි: " + e.message + "</p>"; }
+    };
+
+    window.submitProvincialPaper = async () => {
+        const title = document.getElementById('new-paper-title').value;
+        const fileInput = document.getElementById('new-paper-file');
+        if(!title || !fileInput.files[0]) return alert("කරුණාකර නම සහ PDF ෆයිල් එක ලබාදෙන්න!");
+        document.getElementById('loader').style.display = 'flex';
+        try {
+            const pdfUrl = await uploadPdfToDrive(fileInput.files[0]);
+            if(pdfUrl) {
+                await addDoc(collection(db, "provincial_papers"), {
+                    province: currentProvince,
+                    grade: currentGrade, // තෝරාගත් වසර දත්ත ගබඩාවට යවයි
+                    title: title,
+                    url: pdfUrl,
+                    teacherId: auth.currentUser.uid,
+                    timestamp: Date.now()
+                });
+                document.getElementById('new-paper-title').value = ''; fileInput.value = ''; document.getElementById('add-paper-form').style.display = 'none'; document.getElementById('show-add-paper-btn').style.display = 'block'; window.loadProvincialPapers();
+                alert("ප්‍රශ්න පත්‍රය සාර්ථකව Upload විය! 🎉");
+            }
+        } catch (e) { alert("Google Drive Upload දෝෂයකි: " + e.message); }
+        document.getElementById('loader').style.display = 'none';
+    };
+
+    window.deleteProvincialPaper = async (id) => { 
+        if(!confirm("මකා දැමීමට අවශ්‍යද?")) return; 
+        document.getElementById('loader').style.display = 'flex'; 
+        await deleteDoc(doc(db, "provincial_papers", id)); window.loadProvincialPapers(); document.getElementById('loader').style.display = 'none'; 
+    };
+
+    // ==========================================
+    // SYLLABUS & LESSONS (Grade Specific)
+    // ==========================================
+    window.loadLessons = async () => {
+        document.getElementById('syllabus-title').innerText = `${currentGrade} - පාඩම් ලැයිස්තුව`;
+        const container = document.getElementById('dynamic-lessons-list');
+        container.innerHTML = "<p style='text-align:center; font-size:12px; color:#888;'>පාඩම් සොයමින්...</p>";
+        const addSection = document.getElementById('teacher-add-lesson-section');
+        if(addSection) { addSection.style.display = currentRole === 'teacher' ? 'block' : 'none'; }
+
+        try {
+            // තෝරාගත් වසරට (10/11) අදාල පාඩම් පමණක් ගනී
+            const q = query(collection(db, "lessons"), where("grade", "==", currentGrade));
+            const snapshot = await getDocs(q);
+            container.innerHTML = "";
+            if(snapshot.empty) { container.innerHTML = "<p style='text-align:center; font-size:12px; color:#888;'>දැනට මෙම වසරට පාඩම් ඇතුලත් කර නැත.</p>"; return; }
+
+            let lessonsArray = [];
+            snapshot.forEach(docSnap => { lessonsArray.push({ id: docSnap.id, ...docSnap.data() }); });
+            lessonsArray.sort((a, b) => a.timestamp - b.timestamp); // පැරණි ඒවා (මුල් පාඩම්) මුලින් පෙන්වයි
+
+            lessonsArray.forEach((data, index) => {
+                const isMine = auth.currentUser && data.teacherId === auth.currentUser.uid;
+                let html = `<div class="list-item lesson-item"><div class="icon-box" onclick="window.openLessonQuestions('${data.id}', '${data.title}')"><i class="fa-solid fa-shapes"></i></div><div class="details" onclick="window.openLessonQuestions('${data.id}', '${data.title}')"><h4>${index + 1}. ${data.title}</h4><p>නිබන්ධන පරීක්ෂා කරන්න</p></div>`;
+                if(isMine) { html += `<i class="fa-solid fa-trash" style="color:#ef4444; font-size:14px; cursor:pointer;" onclick="window.deleteLesson('${data.id}')"></i>`; } 
+                html += `</div>`; container.innerHTML += html;
+            });
+        } catch (e) { container.innerHTML = "<p style='text-align:center; font-size:12px; color:red;'>දෝෂයකි: " + e.message + "</p>"; }
+    };
+
+    window.submitLesson = async () => {
+        const title = document.getElementById('new-lesson-title').value;
+        if(!title) return alert("පාඩමේ නම ඇතුලත් කරන්න!");
+        document.getElementById('loader').style.display = 'flex';
+        try {
+            await addDoc(collection(db, "lessons"), { grade: currentGrade, title: title, teacherId: auth.currentUser.uid, timestamp: Date.now() });
+            document.getElementById('new-lesson-title').value = ''; document.getElementById('add-lesson-form').style.display = 'none'; document.getElementById('show-add-lesson-btn').style.display = 'block'; window.loadLessons();
+        } catch (e) { alert("දෝෂයකි: " + e.message); }
+        document.getElementById('loader').style.display = 'none';
+    };
+
+    window.deleteLesson = async (id) => { 
+        if(!confirm("මෙම පාඩම මකා දැමීමට අවශ්‍යද?")) return; 
+        document.getElementById('loader').style.display = 'flex'; await deleteDoc(doc(db, "lessons", id)); window.loadLessons(); document.getElementById('loader').style.display = 'none'; 
+    };
+
+    // ==========================================
+    // LESSON QUESTIONS (Specific to a Lesson)
+    // ==========================================
+    window.openLessonQuestions = (lessonId, lessonTitle) => {
+        currentLessonId = lessonId;
+        document.getElementById('lesson-title').innerText = lessonTitle;
+        window.showPage('lesson-questions-page');
+        window.loadLessonQuestions();
+    };
+
+    window.loadLessonQuestions = async () => {
+        const container = document.getElementById('dynamic-lesson-questions');
+        container.innerHTML = "<p style='text-align:center; font-size:12px; color:#888;'>නිබන්ධන සොයමින්...</p>";
+        const addSection = document.getElementById('teacher-add-lq-section');
+        if(addSection) { addSection.style.display = currentRole === 'teacher' ? 'block' : 'none'; }
+
+        try {
+            // අදාළ පාඩමට පමණක් සීමා වූ නිබන්ධන ගනී
+            const q = query(collection(db, "lesson_questions"), where("lessonId", "==", currentLessonId));
+            const snapshot = await getDocs(q);
+            container.innerHTML = "";
+            if(snapshot.empty) { container.innerHTML = "<p style='text-align:center; font-size:12px; color:#888;'>දැනට මෙම පාඩමට නිබන්ධන ඇතුලත් කර නැත.</p>"; return; }
+
+            let qArray = [];
+            snapshot.forEach(docSnap => { qArray.push({ id: docSnap.id, ...docSnap.data() }); });
+            qArray.sort((a, b) => b.timestamp - a.timestamp); // අලුත් ඒවා මුලින් පෙන්වයි
+
+            qArray.forEach((data) => {
+                const isMine = auth.currentUser && data.teacherId === auth.currentUser.uid;
+                let html = `<div class="list-item" style="flex-direction: column; align-items: flex-start; gap: 10px; position:relative;">`;
+                if(isMine) { html += `<i class="fa-solid fa-trash" style="position:absolute; right:15px; top:15px; color:#ef4444; font-size:14px; cursor:pointer;" onclick="window.deleteLessonQuestion('${data.id}')"></i>`; }
+                html += `<div class="details" style="width: 100%;"><h4 style="margin-bottom: 10px; line-height: 1.4; padding-right:20px;">${data.text}</h4>`;
+                
+                if(data.fileUrl) {
+                    html += `<button class="btn btn-primary" style="padding: 8px; font-size: 12px; margin-bottom: 0; display: inline-flex; width: auto; gap: 8px; align-items: center;" onclick="window.openPdfViewer('නිබන්ධනය / ගැටලුව', '${data.fileUrl}')"><i class="fa-solid fa-eye"></i> ගොනුව බලන්න (View)</button>`;
+                }
+                html += `</div></div>`; container.innerHTML += html;
+            });
+        } catch (e) { container.innerHTML = "<p style='text-align:center; font-size:12px; color:red;'>දෝෂයකි: " + e.message + "</p>"; }
+    };
+
+    window.submitLessonQuestion = async () => {
+        const text = document.getElementById('new-lq-text').value;
+        const fileInput = document.getElementById('new-lq-file');
+        
+        if(!text && !fileInput.files[0]) return alert("කරුණාකර ගැටලුවක් හෝ ගොනුවක් ලබාදෙන්න!");
+        document.getElementById('loader').style.display = 'flex';
+        
+        try {
+            let fileUrl = "";
+            if(fileInput.files[0]) {
+                fileUrl = await uploadPdfToDrive(fileInput.files[0]); // ගොනුව Google Drive එකට යවයි
+            }
+            
+            await addDoc(collection(db, "lesson_questions"), {
+                lessonId: currentLessonId, // අදාළ පාඩමේ ID එක සේව් කරයි
+                text: text,
+                fileUrl: fileUrl,
+                teacherId: auth.currentUser.uid,
+                timestamp: Date.now()
+            });
+            
+            document.getElementById('new-lq-text').value = ''; fileInput.value = ''; document.getElementById('add-lq-form').style.display = 'none'; document.getElementById('show-add-lq-btn').style.display = 'block'; window.loadLessonQuestions(); alert("සාර්ථකව Upload විය! 🎉");
+        } catch (e) { alert("දෝෂයකි: " + e.message); }
+        document.getElementById('loader').style.display = 'none';
+    };
+
+    window.deleteLessonQuestion = async (id) => { 
+        if(!confirm("මෙය මකා දැමීමට අවශ්‍යද?")) return; 
+        document.getElementById('loader').style.display = 'flex'; await deleteDoc(doc(db, "lesson_questions", id)); window.loadLessonQuestions(); document.getElementById('loader').style.display = 'none'; 
+    };
+
+    // ==========================================
+    // CHAT & INBOX
+    // ==========================================
+    window.openChatRoom = (targetUid, name, img) => {
+        if(!auth.currentUser) return alert("කරුණාකර ලොග් වන්න!"); if(auth.currentUser.uid === targetUid) return alert("ඔබට ඔබ සමගම චැට් කළ නොහැක!");
+        currentTargetUid = targetUid; currentTargetName = name; currentTargetImg = img;
+        const uid1 = auth.currentUser.uid; const uid2 = targetUid; currentChatId = uid1 < uid2 ? `${uid1}_${uid2}` : `${uid2}_${uid1}`;
+        document.getElementById('chat-header-name').innerText = name; document.getElementById('chat-header-img').src = img; window.showPage('chat-room-page');
+        const msgContainer = document.getElementById('chat-messages-container'); msgContainer.innerHTML = '';
+        if (unsubscribeChat) unsubscribeChat(); 
+        const q = query(collection(db, "chats", currentChatId, "messages"), orderBy("timestamp", "asc"));
+        unsubscribeChat = onSnapshot(q, (snapshot) => {
+            msgContainer.innerHTML = '';
+            snapshot.forEach((docSnap) => {
+                const msg = docSnap.data(); const isMe = msg.senderId === auth.currentUser.uid; const msgClass = isMe ? 'msg-sent' : 'msg-received';
+                let timeText = ""; if(msg.timestamp) { const date = new Date(msg.timestamp.toMillis()); timeText = formatTime(date.getHours() + ":" + (date.getMinutes()<10?'0':'') + date.getMinutes()); }
+                let contentHtml = msg.text || "";
+                if (msg.imageUrl) { contentHtml = `<img src="${msg.imageUrl}" style="max-width: 200px; border-radius: 10px; margin-bottom: 5px; cursor: pointer;" onclick="window.open(this.src)"> <br> ${contentHtml}`; }
+                msgContainer.innerHTML += `<div class="msg-bubble ${msgClass}">${contentHtml}<span class="msg-time">${timeText}</span></div>`;
+            }); msgContainer.scrollTop = msgContainer.scrollHeight;
+        });
+    };
+
+    window.sendMessage = async () => {
+        const input = document.getElementById('msg-input'); const text = input.value.trim();
+        if(text !== "" && currentChatId) {
+            input.value = ""; 
+            const msgData = { senderId: auth.currentUser.uid, text: text, imageUrl: null, timestamp: serverTimestamp() };
+            await addDoc(collection(db, "chats", currentChatId, "messages"), msgData);
+            const myName = document.getElementById('my-profile-name-display').value; const myImg = document.getElementById('my-profile-pic-display').src;
+            await setDoc(doc(db, "chats", currentChatId), { participants: [auth.currentUser.uid, currentTargetUid], lastMessage: text, lastMessageTime: serverTimestamp(), names: { [auth.currentUser.uid]: myName, [currentTargetUid]: currentTargetName }, images: { [auth.currentUser.uid]: myImg, [currentTargetUid]: currentTargetImg } }, { merge: true });
+        }
+    };
+
+    window.sendChatImage = async (event) => {
+        const file = event.target.files[0]; if(!file || !currentChatId) return; document.getElementById('loader').style.display = 'flex';
+        try {
+            const imageUrl = await window.uploadToImgBB(file);
+            const msgData = { senderId: auth.currentUser.uid, text: "", imageUrl: imageUrl, timestamp: serverTimestamp() };
+            await addDoc(collection(db, "chats", currentChatId, "messages"), msgData);
+            const myName = document.getElementById('my-profile-name-display').value; const myImg = document.getElementById('my-profile-pic-display').src;
+            await setDoc(doc(db, "chats", currentChatId), { participants: [auth.currentUser.uid, currentTargetUid], lastMessage: "📷 පින්තූරයක්", lastMessageTime: serverTimestamp(), names: { [auth.currentUser.uid]: myName, [currentTargetUid]: currentTargetName }, images: { [auth.currentUser.uid]: myImg, [currentTargetUid]: currentTargetImg } }, { merge: true });
+            event.target.value = ""; 
+        } catch (error) { alert("පින්තූරය යැවීමට නොහැකි විය: " + error.message); }
+        document.getElementById('loader').style.display = 'none';
+    };
+
+    window.loadInbox = () => {
+        if(!auth.currentUser) return; if(unsubscribeInbox) unsubscribeInbox();
+        const q = query(collection(db, "chats"), where("participants", "array-contains", auth.currentUser.uid));
+        unsubscribeInbox = onSnapshot(q, (snapshot) => {
+            const inboxContainer = document.getElementById('inbox-list-container'); inboxContainer.innerHTML = "";
+            if(snapshot.empty) { inboxContainer.innerHTML = "<p style='text-align:center; font-size:13px; color:#888; margin-top:20px;'>ඔබට තවම පණිවිඩ නොමැත.</p>"; return; }
+            let chatsArray = []; snapshot.forEach((docSnap) => { chatsArray.push(docSnap.data()); });
+            chatsArray.sort((a, b) => { let timeA = a.lastMessageTime ? a.lastMessageTime.toMillis() : 0; let timeB = b.lastMessageTime ? b.lastMessageTime.toMillis() : 0; return timeB - timeA; });
+            chatsArray.forEach((chat) => {
+                const otherUid = chat.participants.find(uid => uid !== auth.currentUser.uid); if(!otherUid) return; 
+                const otherName = chat.names[otherUid] || "User"; const otherImg = chat.images[otherUid] || "https://ui-avatars.com/api/?name=User";
+                let timeText = ""; if(chat.lastMessageTime) { const date = new Date(chat.lastMessageTime.toMillis()); timeText = formatTime(date.getHours() + ":" + (date.getMinutes()<10?'0':'') + date.getMinutes()); }
+                inboxContainer.innerHTML += `<div class="chat-list-item" onclick="window.openChatRoom('${otherUid}', '${otherName}', '${otherImg}'); lastChatParentPage = 'chats-page';"><img src="${otherImg}" class="teacher-avatar"><div class="chat-details"><h4>${otherName} <span class="chat-time">${timeText}</span></h4><p>${chat.lastMessage}</p></div></div>`;
+            });
+        });
+    };
+
+    window.startChatFromProfile = () => { const name = document.getElementById('profile-teacher-name').innerText.replace("Mr/Ms. ", ""); const img = document.getElementById('profile-img').src; window.openChatRoom(viewProfileUid, name, img); lastChatParentPage = 'teacher-profile-page'; };
+    
+    // ==========================================
+    // OTHER FUNCTIONS
+    // ==========================================
+    window.toggleSavePaper = async (element) => { 
+        if(!auth.currentUser) return alert("කරුණාකර ලොග් වන්න!");
+        const parentDiv = element.parentElement; const clickDiv = parentDiv.querySelector('div[onclick]'); if(!clickDiv) return;
+        const onclickAttr = clickDiv.getAttribute('onclick'); const params = onclickAttr.match(/'([^']+)'/g); 
+        if(!params || params.length < 2) return;
+        const title = params[0].replace(/'/g, ''); const url = params[1].replace(/'/g, ''); const paperId = title.replace(/\s+/g, '_').replace(/\//g, '-'); 
+        const docRef = doc(db, "users", auth.currentUser.uid, "savedPapers", paperId);
+        if(element.classList.contains('fa-regular')) { element.classList.remove('fa-regular'); element.classList.add('fa-solid', 'saved'); await setDoc(docRef, { title: title, url: url, savedAt: Date.now() }); window.loadSavedPapers(); } else { element.classList.remove('fa-solid', 'saved'); element.classList.add('fa-regular'); await deleteDoc(docRef); window.loadSavedPapers(); } 
+    };
+
+    window.loadSavedPapers = async () => {
+        if(!auth.currentUser) return; const container = document.getElementById('saved-papers-container');
+        const q = query(collection(db, "users", auth.currentUser.uid, "savedPapers"), orderBy("savedAt", "desc"));
+        const snapshot = await getDocs(q); let html = `<h3 style="font-size: 15px; margin: 20px 0 10px 0; color: var(--text-color);"><i class="fa-solid fa-bookmark" style="color: #ff4d6d;"></i> මම සේව් කළ ප්‍රශ්න පත්‍ර</h3>`;
+        if(snapshot.empty) { html += `<p style="font-size:12px; color:#888; text-align:center;">තවම කිසිදු ප්‍රශ්න පත්‍රයක් සේව් කර නැත.</p>`; } else {
+            snapshot.forEach(docSnap => { const data = docSnap.data(); html += `<div class="list-item"><div class="icon-box" onclick="window.openPdfViewer('${data.title}', '${data.url}')"><i class="fa-solid fa-file-pdf"></i></div><div class="details" onclick="window.openPdfViewer('${data.title}', '${data.url}')"><h4>${data.title}</h4><p>Saved Paper</p></div><i class="fa-solid fa-trash" style="color:#ef4444; font-size:14px; cursor:pointer;" onclick="window.removeSavedPaper('${docSnap.id}')"></i></div>`; });
+        } container.innerHTML = html;
+    };
+
+    window.removeSavedPaper = async (paperId) => { if(!confirm("මෙම ප්‍රශ්න පත්‍රය ඉවත් කිරීමට අවශ්‍යද?")) return; await deleteDoc(doc(db, "users", auth.currentUser.uid, "savedPapers", paperId)); window.loadSavedPapers(); const allIcons = document.querySelectorAll('.card-save-icon.saved'); allIcons.forEach(icon => { icon.classList.remove('fa-solid', 'saved'); icon.classList.add('fa-regular'); }); };
+
+    window.openGradeMenu = (grade) => { 
+        currentGrade = grade; // තෝරාගත් වසර මතක තබා ගනී (10 හෝ 11)
+        document.getElementById('grade-title').innerText = grade; 
+        window.showPage('grade-menu-page'); 
+    };
+
+    window.showPage = (pageId) => { 
+        document.querySelectorAll('.page-content').forEach(p => p.style.display = 'none'); 
+        if(pageId === 'chat-room-page' || pageId === 'pdf-viewer-page') { document.getElementById(pageId).style.display = 'flex'; } else { document.getElementById(pageId).style.display = 'block'; } 
+        document.getElementById('bottom-navigation').style.display = 'flex'; 
+        if(pageId === 'teacher-questions-page') window.loadTeacherQuestions(); 
+        if(pageId === 'syllabus-list-page') window.loadLessons(); // පාඩම් පිටුවට යද්දී ලෝඩ් වීම
+        window.resetAccordions(); 
+    };
+    
+    window.switchTab = (pageId, element) => { window.showPage(pageId); document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active')); if(element) element.classList.add('active'); };
+    window.toggleAddClassForm = () => { const form = document.getElementById('add-class-form-container'); const btn = document.getElementById('show-add-class-btn'); if (form.style.display === 'none') { form.style.display = 'block'; btn.style.display = 'none'; } else { form.style.display = 'none'; btn.style.display = 'block'; } };
+    window.addClass = async () => { if(currentRole !== 'teacher') return alert("මෙය ගුරුවරුන්ට පමණයි!"); const location = document.getElementById('class-location').value; const grade = document.getElementById('class-grade').value; const day = document.getElementById('class-day').value; const startTime = document.getElementById('class-start-time').value; const endTime = document.getElementById('class-end-time').value; const lesson = document.getElementById('class-lesson').value; const desc = document.getElementById('class-desc').value; if(!location || !lesson) return alert("කරුණාකර අත්‍යවශ්‍ය විස්තර පුරවන්න!"); document.getElementById('loader').style.display = 'flex'; try { await addDoc(collection(db, "classes"), { teacherId: auth.currentUser.uid, location: location, grade: grade, day: day, startTime: startTime, endTime: endTime, lesson: lesson, desc: desc, timestamp: Date.now() }); alert("පන්තිය සාර්ථකව එකතු කළා!"); window.toggleAddClassForm(); document.getElementById('class-location').value = ""; document.getElementById('class-lesson').value = ""; document.getElementById('class-desc').value = ""; window.loadMyClasses(); } catch(e) { alert("Error: " + e.message); } document.getElementById('loader').style.display = 'none'; };
+    window.loadMyClasses = async () => { if(!auth.currentUser) return; const q = query(collection(db, "classes"), where("teacherId", "==", auth.currentUser.uid)); const querySnapshot = await getDocs(q); const container = document.getElementById('my-added-classes-container'); container.innerHTML = ""; if(querySnapshot.empty) { container.innerHTML = "<p style='font-size:12px; color:#888;'>දැනට පන්ති කිසිවක් නැත.</p>"; return; } querySnapshot.forEach((docSnap) => { const data = docSnap.data(); container.innerHTML += `<div class="added-class-card"><h5>${data.location} (${data.grade})</h5><p style="color: #666;">${data.day} ${formatTime(data.startTime)} - ${formatTime(data.endTime)} | පාඩම: ${data.lesson}</p><div class="added-class-actions"><i class="fa-solid fa-trash icon-delete" onclick="window.deleteClass('${docSnap.id}')"></i></div></div>`; }); };
+    window.deleteClass = async (classId) => { if(!confirm("මෙම පන්තිය මකා දැමීමට අවශ්‍යද?")) return; document.getElementById('loader').style.display = 'flex'; await deleteDoc(doc(db, "classes", classId)); window.loadMyClasses(); document.getElementById('loader').style.display = 'none'; };
+    window.loadAllTeachers = async () => { const q = query(collection(db, "users"), where("role", "==", "teacher")); const querySnapshot = await getDocs(q); const container = document.getElementById('teachers-list-container'); container.innerHTML = ""; if(querySnapshot.empty) { container.innerHTML = "<p style='text-align:center; font-size:13px; color:#888;'>දැනට ගුරුවරුන් ලියාපදිංචි වී නැත.</p>"; return; } querySnapshot.forEach((docSnap) => { const data = docSnap.data(); container.innerHTML += `<div class="teacher-list-card" onclick="window.showTeacherProfile('${docSnap.id}', '${data.name}', '${data.profilePic}')"><img src="${data.profilePic}" class="teacher-avatar"><div><h4>Mr/Ms. ${data.name}</h4><p>ගණිතය විශේෂඥ ගුරු</p></div></div>`; }); };
+    window.showTeacherProfile = async (uid, name, pic) => { window.showPage('teacher-profile-page'); viewProfileUid = uid; document.getElementById('profile-teacher-name').innerText = "Mr/Ms. " + name; document.getElementById('profile-img').src = pic; const container = document.getElementById('public-teacher-classes-list'); container.innerHTML = "<p style='text-align:center; font-size:13px;'>පන්ති සොයමින් පවතී...</p>"; const q = query(collection(db, "classes"), where("teacherId", "==", uid)); const querySnapshot = await getDocs(q); container.innerHTML = ""; if(querySnapshot.empty) { container.innerHTML = "<p style='text-align:center; font-size:13px; color:#888;'>මෙම ගුරුවරයා තවම පන්ති ඇතුලත් කර නැත.</p>"; return; } querySnapshot.forEach((docSnap) => { const data = docSnap.data(); container.innerHTML += `<div class="accordion-item"><div class="accordion-header" onclick="window.toggleAccordion(this)"><div class="accordion-title"><h4><i class="fa-solid fa-location-dot" style="color: #ff4d6d;"></i> ${data.location}</h4><p>${data.grade} | ${data.day}. ${formatTime(data.startTime)} - ${formatTime(data.endTime)}</p></div><i class="fa-solid fa-chevron-down accordion-icon"></i></div><div class="accordion-body"><strong>අද පාඩම:</strong> ${data.lesson}<br><br>${data.desc}</div></div>`; }); };
+    function formatTime(timeStr) { if(!timeStr) return ""; let [hours, minutes] = timeStr.split(':'); let ampm = hours >= 12 ? 'PM' : 'AM'; hours = hours % 12; hours = hours ? hours : 12; return hours + ':' + minutes + ' ' + ampm; }
+    window.showMyProfile = () => { window.showPage('my-profile-page'); window.loadSavedPapers(); if (currentRole === 'teacher') { document.getElementById('student-profile-section').style.display = 'none'; document.getElementById('teacher-profile-section').style.display = 'block'; document.getElementById('profile-grade-display').innerText = "ගණිතය විශේෂඥ ගුරු"; window.loadMyClasses(); } else { document.getElementById('student-profile-section').style.display = 'block'; document.getElementById('teacher-profile-section').style.display = 'none'; document.getElementById('profile-grade-display').innerText = "11 වසර - ගණිතය"; } };
+    
+    window.openPdfViewer = (title, url) => { 
+        document.querySelectorAll('.page-content').forEach(page => { if(page.style.display === 'block') { lastPdfParentPage = page.id; } }); 
+        window.showPage('pdf-viewer-page'); document.getElementById('pdf-title').innerText = title; let finalUrl = url || "papers/2025_maths.pdf"; 
+        const downloadBtn = document.getElementById('pdf-download-btn'); if(downloadBtn) { downloadBtn.href = finalUrl; }
+        let viewerUrl = finalUrl; if(finalUrl.includes('drive.google.com')) { viewerUrl = finalUrl.replace('/view?usp=sharing', '/preview').replace('/view', '/preview'); }
+        document.getElementById('pdf-frame').src = viewerUrl; 
+    };
+    
+    window.closePdfViewer = () => { document.getElementById('pdf-frame').src = ""; window.showPage(lastPdfParentPage); };
+    window.goBackFromChat = () => { if(lastChatParentPage === 'teacher-profile-page') { window.showPage('teacher-profile-page'); } else { window.showPage('chats-page'); } };
+    window.toggleAccordion = (element) => { const body = element.nextElementSibling; const icon = element.querySelector('.accordion-icon'); const isOpen = body.style.display === 'block'; window.resetAccordions(); if (!isOpen) { body.style.display = 'block'; icon.style.transform = 'rotate(180deg)'; } };
+    window.resetAccordions = () => { document.querySelectorAll('.accordion-body').forEach(el => el.style.display = 'none'); document.querySelectorAll('.accordion-icon').forEach(el => el.style.transform = 'rotate(0deg)'); };
+    window.filterItems = (inputId, itemClass) => { const searchInput = document.getElementById(inputId).value.toLowerCase(); const items = document.getElementsByClassName(itemClass); for (let i = 0; i < items.length; i++) { const title = items[i].querySelector('h4').innerText.toLowerCase(); if (title.includes(searchInput)) { items[i].style.display = "flex"; } else { items[i].style.display = "none"; } } };
+</script>
+</body>
+</html>
