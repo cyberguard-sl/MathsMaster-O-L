@@ -165,12 +165,30 @@
             <img src="banner.png" alt="Banner">
             <i class="fa-solid fa-xmark close-sidebar-btn" onclick="closeSidebar()"></i>
         </div>
-        <div class="sidebar-menu">
+        <div class="sidebar-menu" style="display: flex; flex-direction: column;">
             <div class="menu-item" onclick="openModal('about-modal')"><i class="fa-solid fa-circle-info"></i> යෙදුම පිළිබඳව (About)</div>
             <div class="menu-item" onclick="openModal('contact-modal')"><i class="fa-solid fa-address-book"></i> අප හා සම්බන්ධ වන්න</div>
-            <div class="menu-item" onclick="logoutUser()" style="margin-top: auto; color: #ef4444;"><i class="fa-solid fa-right-from-bracket" style="color: #ef4444;"></i> ඉවත් වන්න (Logout)</div>
+            
+            <!-- 👇 'අපේ ඇඩ්' පෙන්වන අලුත් කොටස 👇 -->
+            <div style="flex: 1; padding: 20px; display: flex; align-items: center; justify-content: center; margin-top: 10px;">
+                <!-- ඔයාගේ YouTube චැනල් එකට හෝ Play Store App එකට ලින්ක් එක දෙන්න -->
+                <a href="https://www.youtube.com/@Danidu_Official" target="_blank" style="text-decoration: none; width: 100%;">
+                    <div style="background: linear-gradient(135deg, #4361ee, #3a0ca3); padding: 20px 15px; border-radius: 15px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.15); transition: 0.3s;">
+                        
+                        <!-- ඔබට පින්තූරයක් දාන්න අවශ්‍ය නම් පහත පේළියේ කමෙන්ට් එක අයින් කරලා img ටැග් එක පාවිච්චි කරන්න -->
+                        <!-- <img src="ඔයාගේ_පින්තූරය.jpg" style="width: 100%; border-radius: 10px; margin-bottom: 10px;"> -->
+                        
+                        <i class="fa-brands fa-youtube" style="font-size: 30px; color: white; margin-bottom: 10px;"></i>
+                        <h4 style="color: white; font-size: 15px; margin-bottom: 5px;">Danidu Official</h4>
+                        <p style="font-size: 11px; color: #d1d8ff; margin-bottom: 15px;">අලුත්ම තාක්ෂණික තොරතුරු සඳහා අපගේ YouTube චැනලය හා එක්වන්න.</p>
+                        <span style="background: white; color: var(--primary-color); padding: 6px 15px; border-radius: 20px; font-size: 11px; font-weight: 700;">Subscribe Now</span>
+                    </div>
+                </a>
+            </div>
+            <!-- 👆 අවසානය 👆 -->
+
+            <div class="menu-item" onclick="logoutUser()" style="margin-top: auto; color: #ef4444; border-top: 1px solid #f1f3f4;"><i class="fa-solid fa-right-from-bracket" style="color: #ef4444;"></i> ඉවත් වන්න (Logout)</div>
         </div>
-    </div>
 
     <!-- ================= MODALS (POP-UPS) ================= -->
     <div id="about-modal" class="modal">
