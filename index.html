@@ -536,7 +536,15 @@
     let unsubscribeChat = null; let unsubscribeInbox = null; let viewProfileUid = null;
     let currentProvince = ''; let currentGrade = '11 වසර'; let currentLessonId = '';
 
-    window.openSidebar = () => { document.getElementById('sidebar').classList.add('open'); document.getElementById('sidebar-overlay').style.display = 'block'; };
+    window.openSidebar = () => { 
+        document.getElementById('sidebar').classList.add('open'); 
+        document.getElementById('sidebar-overlay').style.display = 'block'; 
+
+        // පරිශීලකයා ඇප් එක ඇතුළේ නම් Interstitial Ad එක පෙන්වීම සඳහා ඇන්ඩ්‍රොයිඩ් කේතය ඇමතීම
+        if (window.AndroidApp && window.AndroidApp.showSidebarAd) {
+            window.AndroidApp.showSidebarAd();
+        }
+    };
     window.closeSidebar = () => { document.getElementById('sidebar').classList.remove('open'); document.getElementById('sidebar-overlay').style.display = 'none'; };
     window.openModal = (id) => { document.getElementById(id).style.display = 'flex'; window.closeSidebar(); };
     window.closeModal = (id) => { document.getElementById(id).style.display = 'none'; };
