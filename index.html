@@ -509,7 +509,7 @@
 <!-- Firebase SDKs -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut, signInWithCredential } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
     import { getFirestore, doc, setDoc, getDoc, collection, addDoc, getDocs, query, where, deleteDoc, orderBy, updateDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
     const firebaseConfig = {
@@ -567,13 +567,44 @@
         document.getElementById('loader').style.display = 'none';
     };
 
-    window.handleGoogleAuth = async () => {
+   window.handleGoogleAuth = async () => {
+        // පරිශීලකයා ඉන්නේ Android App එක ඇතුළේ නම්
+        if (window.AndroidApp) {
+            window.AndroidApp.startGoogleLogin(); 
+        } else {
+            // සාමාන්‍ය වෙබ් බ්‍රවුසරයකින් නම් පරණ ක්‍රමයටම ලොග් වීමට ඉඩ දීම
+            document.getElementById('loader').style.display = 'flex';
+            try {
+                const result = await signInWithPopup(auth, googleProvider); const user = result.user;
+                const docSnap = await getDoc(doc(db, "users", user.uid));
+                if (!docSnap.exists()) { await setDoc(doc(db, "users", user.uid), { name: user.displayName, email: user.email, grade: "11 වසර", role: "student", profilePic: user.photoURL }); }
+            } catch (error) { alert("Google Login Error: " + error.message); }
+            document.getElementById('loader').style.display = 'none';
+        }
+    };
+
+    // Android App එකෙන් එවන Token එක Firebase වෙත යැවීම සඳහා අලුත් ශ්‍රිතය
+    window.handleGoogleToken = async (idToken) => {
         document.getElementById('loader').style.display = 'flex';
         try {
-            const result = await signInWithPopup(auth, googleProvider); const user = result.user;
+            const credential = GoogleAuthProvider.credential(idToken);
+            const result = await signInWithCredential(auth, credential); 
+            const user = result.user;
+            
+            // අලුත් ගිණුමක් නම් දත්ත සමුදායට (Firestore) ඇතුළත් කිරීම
             const docSnap = await getDoc(doc(db, "users", user.uid));
-            if (!docSnap.exists()) { await setDoc(doc(db, "users", user.uid), { name: user.displayName, email: user.email, grade: "11 වසර", role: "student", profilePic: user.photoURL }); }
-        } catch (error) { alert("Google Login Error: " + error.message); }
+            if (!docSnap.exists()) { 
+                await setDoc(doc(db, "users", user.uid), { 
+                    name: user.displayName, 
+                    email: user.email, 
+                    grade: "11 වසර", 
+                    role: "student", 
+                    profilePic: user.photoURL 
+                }); 
+            }
+        } catch (error) { 
+            alert("App Login Error: " + error.message); 
+        }
         document.getElementById('loader').style.display = 'none';
     };
 
