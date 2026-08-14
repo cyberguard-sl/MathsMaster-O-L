@@ -280,7 +280,7 @@
             </div>
         </div>
 
-        <!-- ================= GRADE MENU PAGE ================= -->
+       <!-- ================= GRADE MENU PAGE ================= -->
         <div id="grade-menu-page" class="page-content">
             <div class="top-bar"><i class="fa-solid fa-arrow-left back-btn" onclick="window.showPage('home-page')"></i><span id="grade-title">10 වසර</span></div>
             <div class="content-section">
@@ -289,6 +289,37 @@
                     <div class="card" onclick="window.showPage('paper-categories-page')"><i class="fa-solid fa-file-pdf"></i><h3>ප්‍රශ්න පත්‍ර</h3></div>
                     <div class="card" onclick="window.showPage('syllabus-list-page')"><i class="fa-solid fa-book"></i><h3>විෂය නිර්දේශය</h3></div>
                 </div>
+
+                <!-- 👇 අලුතින් එකතු කළ කොටස මෙතනින් පටන් ගනී 👇 -->
+                
+                <!-- 10 වසර සඳහා කෙටි සටහන (ආරම්භයේදී සැඟවී ඇත) -->
+                <div id="grade-10-extra-content" style="display: none; margin-top: 25px;">
+                    <h3 style="margin-bottom: 10px; font-size: 15px; color: var(--text-color);">10 වසර - කෙටි සටහන 💡</h3>
+                    <div style="background: white; border-left: 4px solid #10b981; padding: 12px 15px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+                        <h4 style="font-size: 13px; color: #10b981; margin-bottom: 10px;"><i class="fa-solid fa-circle-notch"></i> වෘත්තයක මිනුම්</h4>
+                        <p style="font-size: 14px; font-weight: 700; color: #333; text-align: center; margin: 0;">වර්ගඵලය හා පරිධිය</p>
+                        <p style="font-size: 16px; font-weight: 800; color: #000; text-align: center; margin: 5px 0 10px 0;">A = πr² &nbsp;|&nbsp; C = 2πr</p>
+                        <p style="font-size: 11.5px; font-weight: 600; color: #111; text-align: justify; line-height: 1.4; margin: 0;">
+                            අරය 'r' වන වෘත්තයක වර්ගඵලය සෙවීමට πr² සූත්‍රයද, එහි වටප්‍රමාණය හෙවත් පරිධිය සෙවීමට 2πr සූත්‍රයද භාවිතා වේ. මෙහි π හි අගය ආසන්න වශයෙන් 22/7 හෝ 3.14 ලෙස ගනු ලැබේ.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- 11 වසර සඳහා කෙටි සටහන (ආරම්භයේදී සැඟවී ඇත) -->
+                <div id="grade-11-extra-content" style="display: none; margin-top: 25px;">
+                    <h3 style="margin-bottom: 10px; font-size: 15px; color: var(--text-color);">11 වසර - කෙටි සටහන 💡</h3>
+                    <div style="background: white; border-left: 4px solid #f59e0b; padding: 12px 15px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+                        <h4 style="font-size: 13px; color: #f59e0b; margin-bottom: 10px;"><i class="fa-solid fa-database"></i> ඝන වස්තුවල පරිමාව</h4>
+                        <p style="font-size: 14px; font-weight: 700; color: #333; text-align: center; margin: 0;">සිලින්ඩරයක පරිමාව</p>
+                        <p style="font-size: 16px; font-weight: 800; color: #000; text-align: center; margin: 5px 0 10px 0;">V = πr²h</p>
+                        <p style="font-size: 11.5px; font-weight: 600; color: #111; text-align: justify; line-height: 1.4; margin: 0;">
+                            පතුලේ අරය 'r' සහ ලම්බ උස 'h' වන ඍජු වෘත්ත සිලින්ඩරයක පරිමාව සෙවීම සඳහා එහි පතුලේ වර්ගඵලය (πr²) එහි උසින් (h) ගුණ කළ යුතුය. 11 වසරේ මිනුම පාඩමේදී මෙය බෙහෙවින් භාවිතා වේ.
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- 👆 අලුතින් එකතු කළ කොටස මෙතනින් අවසන් වේ 👆 -->
+
             </div>
         </div>
 
@@ -1057,10 +1088,19 @@
 
     window.removeSavedPaper = async (paperId) => { if(!confirm("මෙම ප්‍රශ්න පත්‍රය ඉවත් කිරීමට අවශ්‍යද?")) return; await deleteDoc(doc(db, "users", auth.currentUser.uid, "savedPapers", paperId)); window.loadSavedPapers(); const allIcons = document.querySelectorAll('.card-save-icon.saved'); allIcons.forEach(icon => { icon.classList.remove('fa-solid', 'saved'); icon.classList.add('fa-regular'); }); };
 
-    window.openGradeMenu = (grade) => { 
+   window.openGradeMenu = (grade) => { 
         currentGrade = grade; 
         document.getElementById('grade-title').innerText = grade; 
         window.showPage('grade-menu-page'); 
+        
+        // තෝරාගත් වසරට අදාළ කෙටි සටහන පමණක් පෙන්වීම
+        if (grade === '10 වසර') {
+            document.getElementById('grade-10-extra-content').style.display = 'block';
+            document.getElementById('grade-11-extra-content').style.display = 'none';
+        } else {
+            document.getElementById('grade-10-extra-content').style.display = 'none';
+            document.getElementById('grade-11-extra-content').style.display = 'block';
+        }
     };
 
     window.showPage = (pageId) => { 
